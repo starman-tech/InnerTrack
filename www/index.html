@@ -1,0 +1,1669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<title>InnerTrack</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,500&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+<script>
+tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      colors: {
+        "primary": "#3b656b","primary-dim": "#2f595f","primary-fixed": "#bfeaf1","primary-fixed-dim": "#b1dce3","primary-container": "#bfeaf1","on-primary": "#e7fcff","on-primary-fixed": "#1a454b","on-primary-container": "#2e585e","on-primary-fixed-variant": "#386268",
+        "secondary": "#56606a","secondary-dim": "#4a545e","secondary-container": "#dae4ef","secondary-fixed": "#dae4ef","secondary-fixed-dim": "#cbd5e1","on-secondary": "#f6f9ff","on-secondary-container": "#49535c","on-secondary-fixed": "#37404a","on-secondary-fixed-variant": "#535d66",
+        "tertiary": "#5c5f62","tertiary-dim": "#505356","tertiary-container": "#f2f4f7","tertiary-fixed": "#f2f4f7","tertiary-fixed-dim": "#e3e5e8","on-tertiary": "#f7f9fc","on-tertiary-container": "#595c5f","on-tertiary-fixed": "#474a4d","on-tertiary-fixed-variant": "#636669",
+        "surface": "#fbf9f8","surface-bright": "#fbf9f8","surface-dim": "#dadada","surface-variant": "#e3e2e2","surface-container-lowest": "#ffffff","surface-container-low": "#f5f3f3","surface-container": "#efeded","surface-container-high": "#e9e8e8","surface-container-highest": "#e3e2e2",
+        "on-surface": "#1e2222","on-surface-variant": "#5e5f5f","on-background": "#1e2222","background": "#eef6f8","surface-tint": "#3b656b","inverse-surface": "#0e0e0e","inverse-on-surface": "#9e9c9c","inverse-primary": "#caf6fd",
+        "error": "#9f403d","error-dim": "#4e0309","error-container": "#fe8983","on-error": "#fff7f6","on-error-container": "#752121",
+        "outline": "#7a7b7b","outline-variant": "#b2b2b2"
+      },
+      fontFamily: { sans: ["Plus Jakarta Sans", "sans-serif"] },
+      borderRadius: { DEFAULT: "1rem", lg: "2rem", xl: "3rem", full: "9999px" },
+    }
+  }
+}
+</script>
+<style>
+*,*::before,*::after{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden}
+body{font-family:'Plus Jakarta Sans',sans-serif;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;background:linear-gradient(145deg,#dff0f4 0%,#edf5f2 30%,#f0eaff 65%,#e6f4f1 100%);background-attachment:fixed;color:#1e2222}
+
+/* ── BG BLOBS ── */
+body::before,body::after{content:'';position:fixed;border-radius:50%;pointer-events:none;z-index:0}
+body::before{width:500px;height:500px;top:-100px;right:-100px;background:radial-gradient(circle,rgba(191,234,241,.45),transparent 70%);filter:blur(60px)}
+body::after{width:600px;height:600px;bottom:-150px;left:-150px;background:radial-gradient(circle,rgba(186,178,240,.3),transparent 70%);filter:blur(80px)}
+
+.material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 300,'GRAD' 0,'opsz' 24;font-size:24px;user-select:none;vertical-align:middle}
+.fill-icon{font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24}
+
+/* ── SCREENS ── */
+.screen{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;transition:opacity .35s cubic-bezier(0.4,0,0.2,1),transform .35s cubic-bezier(0.4,0,0.2,1);z-index:1}
+.screen.hidden{opacity:0;pointer-events:none;transform:translateY(14px)}
+
+/* ── GLASS SYSTEM ── */
+.glass{background:rgba(255,255,255,.55);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);border:1px solid rgba(255,255,255,.75)}
+.glass-card{background:rgba(255,255,255,.62);backdrop-filter:blur(24px) saturate(160%);-webkit-backdrop-filter:blur(24px) saturate(160%);border:1px solid rgba(255,255,255,.8);box-shadow:0 8px 32px rgba(49,70,80,.07),0 2px 8px rgba(49,70,80,.04)}
+.glass-subtle{background:rgba(255,255,255,.38);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.5)}
+.glass-dark{background:rgba(30,34,34,.72);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,.08)}
+.glass-teal{background:rgba(191,234,241,.35);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(191,234,241,.6)}
+
+/* ── BUTTONS ── */
+.btn-primary{background:linear-gradient(135deg,#3b656b 0%,#2a5257 100%);color:#e7fcff;font-weight:700;border-radius:9999px;transition:all .35s cubic-bezier(0.4,0,0.2,1);box-shadow:0 6px 24px rgba(42,82,87,.3)}
+.btn-primary:active{transform:scale(.96);box-shadow:0 2px 8px rgba(42,82,87,.2)}
+.btn-secondary{background:rgba(191,234,241,.6);backdrop-filter:blur(12px);color:#1a454b;font-weight:600;border-radius:9999px;border:1px solid rgba(191,234,241,.8);transition:all .35s cubic-bezier(0.4,0,0.2,1)}
+.btn-secondary:active{transform:scale(.96)}
+
+/* ── INPUTS ── */
+.input-field{background:rgba(255,255,255,.5);backdrop-filter:blur(12px);border:1.5px solid rgba(255,255,255,.75);border-radius:1.25rem;color:#1e2222;transition:all .3s ease;outline:none;width:100%;font-family:'Plus Jakarta Sans',sans-serif}
+.input-field:focus{background:rgba(255,255,255,.75);border-color:rgba(59,101,107,.4);box-shadow:0 0 0 3px rgba(59,101,107,.12)}
+.input-field::placeholder{color:#8a9090}
+
+/* ── NAV ── */
+.nav-pill{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);width:94%;max-width:420px;z-index:100}
+.nav-pill-inner{background:rgba(255,255,255,.78);backdrop-filter:blur(32px) saturate(180%);-webkit-backdrop-filter:blur(32px) saturate(180%);border-radius:9999px;border:1px solid rgba(255,255,255,.9);box-shadow:0 8px 40px rgba(49,70,80,.10),0 2px 12px rgba(49,70,80,.06);display:flex;justify-content:space-around;align-items:center;padding:6px 4px}
+.nav-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:8px 10px;border-radius:9999px;color:#7a8a8a;transition:all .35s cubic-bezier(0.4,0,0.2,1);cursor:pointer;background:none;border:none;min-width:56px}
+.nav-btn .nav-label{font-size:9px;font-weight:700;letter-spacing:.04em;transition:all .35s ease}
+.nav-btn.active{background:linear-gradient(135deg,rgba(191,234,241,.85),rgba(162,218,228,.6));color:#2a5257;transform:scale(1.05)}
+.nav-btn.active .nav-label{color:#2a5257}
+.nav-btn .material-symbols-outlined{font-size:22px}
+
+/* ── TOP BAR ── */
+.top-bar{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.65);backdrop-filter:blur(28px) saturate(160%);-webkit-backdrop-filter:blur(28px) saturate(160%);border-bottom:1px solid rgba(255,255,255,.7);box-shadow:0 4px 24px rgba(49,70,80,.05)}
+
+/* ── CARDS ── */
+.card{border-radius:1.25rem;transition:transform .35s cubic-bezier(0.4,0,0.2,1),box-shadow .35s ease}
+.card:active{transform:scale(.984)}
+
+/* ── PROGRESS ── */
+.progress-bar-track{background:rgba(178,178,178,.18);border-radius:9999px;overflow:hidden}
+.progress-bar-fill{height:100%;border-radius:9999px;transition:width 1s cubic-bezier(0.4,0,0.2,1)}
+
+/* ── TOGGLE ── */
+.toggle{position:relative;display:inline-flex;width:48px;height:28px;cursor:pointer}
+.toggle input{opacity:0;width:0;height:0;position:absolute}
+.toggle-track{position:absolute;inset:0;border-radius:9999px;background:rgba(178,178,178,.3);transition:.3s}
+.toggle input:checked+.toggle-track{background:linear-gradient(135deg,#3b656b,#2a5257)}
+.toggle-thumb{position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:white;box-shadow:0 2px 8px rgba(49,51,51,.2);transition:.3s}
+.toggle input:checked~.toggle-thumb{transform:translateX(20px)}
+
+/* ── CHIPS ── */
+.chip{display:inline-flex;align-items:center;padding:6px 14px;border-radius:9999px;font-size:.75rem;font-weight:600;letter-spacing:.04em;cursor:pointer;transition:all .3s ease}
+
+/* ── TIMELINE ── */
+.timeline-line{position:absolute;left:11px;top:0;bottom:0;width:2px;background:linear-gradient(to bottom,rgba(59,101,107,.2),rgba(59,101,107,.05))}
+.timeline-dot{position:absolute;left:6px;width:12px;height:12px;border-radius:50%;background:#3b656b;box-shadow:0 0 0 4px rgba(191,234,241,.4)}
+
+/* ── RANGE ── */
+input[type=range]{-webkit-appearance:none;appearance:none;height:6px;background:rgba(191,234,241,.6);border-radius:9999px;outline:none;width:100%}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:24px;height:24px;background:linear-gradient(135deg,#3b656b,#2a5257);border-radius:50%;cursor:pointer;border:3px solid white;box-shadow:0 4px 12px rgba(49,51,51,.18)}
+
+/* ── ANIMATIONS ── */
+.fade-in{animation:fadeIn .5s ease forwards}
+@keyframes fadeIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.stagger-1{animation-delay:.06s;opacity:0}
+.stagger-2{animation-delay:.12s;opacity:0}
+.stagger-3{animation-delay:.18s;opacity:0}
+.stagger-4{animation-delay:.24s;opacity:0}
+.stagger-5{animation-delay:.30s;opacity:0}
+.pulse-dot{animation:pulseDot 2s ease infinite}
+@keyframes pulseDot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+@keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+.slide-up{animation:slideUp .4s cubic-bezier(0.34,1.2,0.64,1) forwards}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:0;height:0}
+
+/* ── SELECT / TEXTAREA ── */
+select{-webkit-appearance:none;appearance:none;background:rgba(255,255,255,.5);backdrop-filter:blur(12px);border:1.5px solid rgba(255,255,255,.75);border-radius:1.25rem;color:#1e2222;padding:18px 24px;font-family:'Plus Jakarta Sans',sans-serif;font-size:1rem;outline:none;width:100%}
+textarea{resize:none;outline:none;border:none;background:transparent;font-family:'Plus Jakarta Sans',sans-serif}
+
+/* ── TASK ITEMS ── */
+.task-item{display:flex;align-items:center;gap:14px;padding:14px 18px;border-radius:1rem;background:rgba(255,255,255,.55);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.75);margin-bottom:10px;transition:all .3s ease}
+.task-item.done{opacity:.55}
+.task-item.done .task-name{text-decoration:line-through;color:#8a9090}
+.task-check{width:26px;height:26px;border-radius:50%;border:2px solid rgba(59,101,107,.35);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .3s cubic-bezier(0.34,1.2,0.64,1);flex-shrink:0;background:transparent}
+.task-check.checked{background:linear-gradient(135deg,#3b656b,#2a5257);border-color:transparent;box-shadow:0 4px 12px rgba(42,82,87,.3)}
+.task-streak{font-size:10px;font-weight:700;color:#3b656b;background:rgba(191,234,241,.5);padding:2px 8px;border-radius:9999px}
+
+/* ── TAB BAR ── */
+.tab-bar{display:flex;gap:8px;padding:4px;background:rgba(255,255,255,.4);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.65);border-radius:9999px}
+.tab-btn{flex:1;padding:9px 16px;border-radius:9999px;font-size:.8rem;font-weight:700;letter-spacing:.04em;border:none;cursor:pointer;transition:all .3s cubic-bezier(0.4,0,0.2,1);color:#7a8a8a;background:transparent}
+.tab-btn.active{background:linear-gradient(135deg,#3b656b,#2a5257);color:#e7fcff;box-shadow:0 4px 16px rgba(42,82,87,.25)}
+
+/* ── GOAL BADGE ── */
+.goal-badge{font-size:.65rem;font-weight:800;letter-spacing:.08em;padding:3px 10px;border-radius:9999px;text-transform:uppercase}
+.locked-badge{background:rgba(122,123,123,.12);color:#7a7b7b;font-size:.65rem;font-weight:700;padding:3px 10px;border-radius:9999px}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════ SPLASH -->
+<div id="screen-splash" class="screen flex flex-col items-center justify-between px-8" style="padding-top:80px;padding-bottom:64px">
+  <div class="flex-1 flex flex-col items-center justify-center">
+    <div class="relative w-44 h-44 mb-10 flex items-center justify-center">
+      <div class="absolute inset-0 rounded-full" style="background:rgba(191,234,241,.2);animation:pulseDot 3s ease infinite"></div>
+      <div class="absolute inset-5 rounded-full glass" style="box-shadow:0 8px 32px rgba(59,101,107,.08)"></div>
+      <div class="absolute inset-10 rounded-full" style="background:rgba(191,234,241,.45)"></div>
+      <div class="relative z-10 w-20 h-20 rounded-2xl glass flex items-center justify-center" style="transform:rotate(45deg);box-shadow:0 8px 32px rgba(59,101,107,.15)">
+        <span class="material-symbols-outlined text-primary text-4xl" style="transform:rotate(-45deg);font-variation-settings:'FILL' 0,'wght' 200,'GRAD' 0,'opsz' 48">auto_awesome</span>
+      </div>
+    </div>
+    <h1 class="text-4xl font-light tracking-tight text-on-surface mb-3 fade-in">InnerTrack</h1>
+    <p class="text-on-surface-variant font-light text-lg leading-relaxed text-center max-w-64 fade-in stagger-1">Mindful moments for a focused journey.</p>
+  </div>
+  <div class="w-full flex flex-col items-center gap-6 fade-in stagger-2">
+    <div class="text-center">
+      <span class="text-xs uppercase tracking-widest font-medium" style="color:rgba(59,101,107,.6)">Begin Here</span>
+      <div class="mt-2 h-px w-8 mx-auto" style="background:rgba(59,101,107,.25)"></div>
+    </div>
+    <button onclick="navigate('login')" class="btn-secondary w-full py-5 text-lg font-semibold text-center">
+      Start My Journey
+    </button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ LOGIN -->
+<div id="screen-login" class="screen hidden flex flex-col items-center justify-center px-8" style="padding-top:48px;padding-bottom:48px">
+  <div class="w-full max-w-md space-y-10">
+    <header class="text-center space-y-4 fade-in">
+      <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-4 glass-teal">
+        <span class="material-symbols-outlined text-primary text-3xl">adjust</span>
+      </div>
+      <h1 class="text-5xl font-extrabold tracking-tight text-on-surface leading-none">InnerTrack</h1>
+      <p class="text-on-surface-variant leading-relaxed mx-auto" style="max-width:260px">Reconnect with your focus and clarity.</p>
+    </header>
+    <section class="space-y-4 fade-in stagger-1">
+      <input id="login-username" class="input-field h-16 px-7 text-base" type="text" placeholder="Username or Email"/>
+      <div class="relative">
+        <input id="login-password" class="input-field h-16 px-7 pr-14 text-base" type="password" placeholder="Password"/>
+        <button onclick="togglePwd('login-password',this)" class="absolute right-5 top-1/2 -translate-y-1/2 text-outline">
+          <span class="material-symbols-outlined text-xl">visibility</span>
+        </button>
+      </div>
+    </section>
+    <div id="login-error" class="hidden text-center text-sm py-3 px-5 rounded-xl" style="background:rgba(254,137,131,.25);color:#9f403d;border:1px solid rgba(254,137,131,.4)"></div>
+    <div class="fade-in stagger-2">
+      <button onclick="handleLogin()" class="btn-primary w-full h-16 text-lg flex items-center justify-center gap-2">
+        Log In <span class="material-symbols-outlined">arrow_forward</span>
+      </button>
+    </div>
+    <div class="flex flex-col items-center gap-3 fade-in stagger-3">
+      <button onclick="navigate('forgot')" class="text-sm text-on-surface-variant hover:text-primary transition-colors">Forgot Password?</button>
+      <div class="flex items-center gap-2 text-sm text-on-surface-variant mt-4">
+        <span>Don't have an account?</span>
+        <button onclick="navigate('signup')" class="text-primary font-bold">Sign up</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ SIGNUP -->
+<div id="screen-signup" class="screen hidden flex flex-col" style="padding-bottom:32px">
+  <nav class="pt-10 pb-6 px-7 max-w-lg mx-auto w-full">
+    <div class="flex flex-col gap-3">
+      <div class="flex justify-between items-end">
+        <span class="text-xs font-semibold text-primary tracking-widest" id="signup-step-label">STEP 1/3</span>
+        <span class="text-xs text-on-surface-variant">Account Details</span>
+      </div>
+      <div class="h-1.5 w-full rounded-full overflow-hidden" style="background:rgba(178,178,178,.2)">
+        <div id="signup-progress" class="h-full rounded-full transition-all duration-700" style="background:linear-gradient(90deg,#3b656b,#7eccd6);width:33%"></div>
+      </div>
+    </div>
+  </nav>
+  <main class="flex-1 flex flex-col px-7 pb-6 max-w-md mx-auto w-full">
+    <!-- Step 1 -->
+    <div id="signup-s1" class="flex flex-col fade-in">
+      <header class="mb-10">
+        <h1 class="text-5xl font-extrabold text-on-surface tracking-tight leading-tight mb-4">Begin your<br><span class="text-primary italic font-medium">inner track.</span></h1>
+        <p class="text-on-surface-variant leading-relaxed">Create a sanctuary for your thoughts and habits.</p>
+      </header>
+      <div class="space-y-6 flex-1">
+        <div><label class="block ml-6 text-xs font-semibold text-on-surface-variant uppercase tracking-widest mb-3">Display Name</label><input id="su-name" class="input-field h-16 px-7 text-base" type="text" placeholder="What should we call you?"/></div>
+        <div><label class="block ml-6 text-xs font-semibold text-on-surface-variant uppercase tracking-widest mb-3">Email Address</label><input id="su-email" class="input-field h-16 px-7 text-base" type="email" placeholder="name@example.com"/></div>
+        <div><label class="block ml-6 text-xs font-semibold text-on-surface-variant uppercase tracking-widest mb-3">Password</label>
+          <div class="relative">
+            <input id="su-password" class="input-field h-16 px-7 pr-14 text-base" type="password" placeholder="••••••••"/>
+            <button onclick="togglePwd('su-password',this)" class="absolute right-5 top-1/2 -translate-y-1/2 text-outline"><span class="material-symbols-outlined text-xl">visibility</span></button>
+          </div>
+        </div>
+      </div>
+      <div id="signup-error1" class="hidden text-center text-sm py-3 px-5 rounded-xl my-4" style="background:rgba(254,137,131,.25);color:#9f403d;border:1px solid rgba(254,137,131,.4)"></div>
+      <div class="pt-8"><button onclick="signupNext(1)" class="btn-primary w-full py-5 flex items-center justify-center gap-3 text-lg font-semibold">Continue <span class="material-symbols-outlined">arrow_forward</span></button></div>
+    </div>
+    <!-- Step 2 -->
+    <div id="signup-s2" class="flex flex-col fade-in hidden">
+      <header class="mb-10">
+        <h1 class="text-5xl font-extrabold text-on-surface tracking-tight leading-tight mb-4">Set your<br><span class="text-primary italic font-medium">intentions.</span></h1>
+        <p class="text-on-surface-variant leading-relaxed">Define your 6-month goals across three life dimensions.</p>
+      </header>
+      <div class="space-y-6 flex-1">
+        <div><label class="block ml-2 text-xs font-semibold text-on-surface-variant uppercase tracking-widest mb-3 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-primary"></span> WORK Goal</label><input id="su-goal-work" class="input-field h-16 px-7 text-base" type="text" placeholder="e.g. Get promoted to Senior Designer"/></div>
+        <div><label class="block ml-2 text-xs font-semibold text-on-surface-variant uppercase tracking-widest mb-3 flex items-center gap-2"><span class="w-2 h-2 rounded-full" style="background:#56606a"></span> VIBE Goal</label><input id="su-goal-vibe" class="input-field h-16 px-7 text-base" type="text" placeholder="e.g. Build a meditation habit"/></div>
+        <div><label class="block ml-2 text-xs font-semibold text-on-surface-variant uppercase tracking-widest mb-3 flex items-center gap-2"><span class="w-2 h-2 rounded-full" style="background:#5c5f62"></span> REALIST Goal</label><input id="su-goal-realist" class="input-field h-16 px-7 text-base" type="text" placeholder="e.g. Pay off student loan"/></div>
+      </div>
+      <div class="flex gap-4 pt-8">
+        <button onclick="signupBack()" class="flex-1 py-5 rounded-full font-semibold text-on-surface-variant glass-subtle">Back</button>
+        <button onclick="signupNext(2)" class="flex-1 btn-primary py-5 flex items-center justify-center gap-2 font-semibold">Continue <span class="material-symbols-outlined">arrow_forward</span></button>
+      </div>
+    </div>
+    <!-- Step 3 -->
+    <div id="signup-s3" class="flex flex-col fade-in hidden">
+      <header class="mb-10">
+        <h1 class="text-5xl font-extrabold text-on-surface tracking-tight leading-tight mb-4">Almost<br><span class="text-primary italic font-medium">there.</span></h1>
+        <p class="text-on-surface-variant leading-relaxed">Let's personalize your experience.</p>
+      </header>
+      <div class="space-y-5 flex-1">
+        <div class="glass-subtle rounded-xl p-6 flex items-center justify-between">
+          <div><p class="font-semibold text-on-surface">Weekly Check-in Reminders</p><p class="text-xs text-on-surface-variant mt-1">Get nudged every Sunday evening</p></div>
+          <label class="toggle"><input type="checkbox" checked id="su-notif"/><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+        </div>
+        <div class="glass-subtle rounded-xl p-6 flex items-center justify-between">
+          <div><p class="font-semibold text-on-surface">Time Capsule Alerts</p><p class="text-xs text-on-surface-variant mt-1">Notify me when a capsule unlocks</p></div>
+          <label class="toggle"><input type="checkbox" checked id="su-capsule-notif"/><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+        </div>
+        <div class="glass-subtle rounded-xl p-6">
+          <p class="font-semibold text-on-surface mb-3">Reflection Rhythm</p>
+          <div class="flex gap-2 flex-wrap">
+            <button onclick="selectRhythm(this,'Daily')" class="chip" style="background:rgba(191,234,241,.7);color:#1a454b">Daily</button>
+            <button onclick="selectRhythm(this,'Weekly')" class="chip" style="background:rgba(233,232,232,.5);color:#5e5f5f">Weekly</button>
+            <button onclick="selectRhythm(this,'Monthly')" class="chip" style="background:rgba(233,232,232,.5);color:#5e5f5f">Monthly</button>
+          </div>
+        </div>
+      </div>
+      <div class="flex gap-4 pt-8">
+        <button onclick="signupBack()" class="flex-1 py-5 rounded-full font-semibold text-on-surface-variant glass-subtle">Back</button>
+        <button onclick="handleSignup()" class="flex-1 btn-primary py-5 flex items-center justify-center gap-2 font-semibold">Create Account <span class="material-symbols-outlined">check</span></button>
+      </div>
+      <p class="text-center text-xs text-on-surface-variant mt-6">Already have an account? <button onclick="navigate('login')" class="text-primary font-bold">Log In</button></p>
+    </div>
+  </main>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ DASHBOARD -->
+<div id="screen-dashboard" class="screen hidden" style="padding-bottom:110px">
+  <header class="top-bar">
+    <div class="grid grid-cols-3 items-center px-6 py-4">
+      <button onclick="navigate('settings')" class="justify-self-start flex items-center gap-2 active:scale-95 transition-transform duration-300">
+        <div id="dash-avatar" class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold glass-teal overflow-hidden" style="color:#1a454b"></div>
+      </button>
+      <span class="justify-self-center font-bold text-primary text-lg tracking-tight">InnerTrack</span>
+      <button onclick="showNotification()" class="material-symbols-outlined justify-self-end text-on-surface-variant">notifications</button>
+    </div>
+  </header>
+  <main class="px-6 pt-8 max-w-2xl mx-auto space-y-8">
+    <section class="fade-in">
+      <p class="text-on-surface-variant font-medium tracking-wide text-sm uppercase">MY CAP</p>
+      <h1 class="text-4xl font-extrabold leading-tight tracking-tight text-on-surface mt-1">
+        Hello <span id="dash-name">Alex</span>,<br>
+        <span class="text-primary">Where are we heading?</span>
+      </h1>
+    </section>
+    <div class="glass-card rounded-2xl p-5 fade-in stagger-1">
+      <div class="flex items-start gap-3">
+        <span class="material-symbols-outlined text-primary opacity-60 flex-shrink-0 mt-0.5" style="font-size:18px">format_quote</span>
+        <p class="italic text-on-surface-variant text-sm leading-relaxed" id="dash-quote">"The best way to predict the future is to create it."</p>
+      </div>
+    </div>
+    <!-- Task quick-summary -->
+    <div id="dash-task-summary" class="glass-card rounded-2xl p-5 fade-in stagger-2 cursor-pointer" onclick="navigate('tasks')">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl glass-teal flex items-center justify-center">
+            <span class="material-symbols-outlined text-primary">checklist</span>
+          </div>
+          <div>
+            <p class="font-bold text-on-surface text-sm">Today's Tasks</p>
+            <p class="text-xs text-on-surface-variant mt-0.5" id="dash-tasks-label">Loading…</p>
+          </div>
+        </div>
+        <span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+      </div>
+    </div>
+    <!-- Goal Cards -->
+    <div class="flex flex-col gap-5 fade-in stagger-3" id="goal-cards-container"></div>
+  </main>
+  <div class="nav-pill"><div class="nav-pill-inner" id="nav-dashboard">
+    <button class="nav-btn active" onclick="navigate('dashboard')" data-tab="dashboard"><span class="material-symbols-outlined fill-icon">home</span><span class="nav-label">Home</span></button>
+    <button class="nav-btn" onclick="navigate('tasks')" data-tab="tasks"><span class="material-symbols-outlined">checklist</span><span class="nav-label">Tasks</span></button>
+    <button class="nav-btn" onclick="navigate('checkin')" data-tab="checkin"><span class="material-symbols-outlined">self_improvement</span><span class="nav-label">Reflect</span></button>
+    <button class="nav-btn" onclick="navigate('capsules')" data-tab="capsules"><span class="material-symbols-outlined">inventory_2</span><span class="nav-label">Capsules</span></button>
+    <button class="nav-btn" onclick="navigate('mirror')" data-tab="mirror"><span class="material-symbols-outlined">history_edu</span><span class="nav-label">Mirror</span></button>
+  </div></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ TASKS -->
+<div id="screen-tasks" class="screen hidden" style="padding-bottom:110px">
+  <header class="top-bar">
+    <div class="flex items-center justify-between px-6 py-4">
+      <div class="flex items-center gap-3">
+        <div id="tasks-avatar" class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold glass-teal" style="color:#1a454b"></div>
+        <span class="font-bold text-primary text-lg tracking-tight">InnerTrack</span>
+      </div>
+      <button onclick="openAddTask()" class="w-10 h-10 rounded-full glass-teal flex items-center justify-center text-primary active:scale-90 transition-transform">
+        <span class="material-symbols-outlined">add</span>
+      </button>
+    </div>
+  </header>
+  <main class="px-6 pt-8 max-w-2xl mx-auto">
+    <section class="mb-8 fade-in">
+      <h2 class="text-4xl font-extrabold tracking-tight text-on-surface mb-2">Habits &<br>Tasks</h2>
+      <p class="text-on-surface-variant leading-relaxed text-sm">Your recurring rituals for daily progress.</p>
+    </section>
+
+    <!-- Global progress ring row -->
+    <div class="grid grid-cols-3 gap-3 mb-8 fade-in stagger-1">
+      <div class="glass-card rounded-2xl p-4 text-center">
+        <div class="text-2xl font-extrabold text-primary" id="tasks-daily-count">0/0</div>
+        <div class="text-xs text-on-surface-variant font-semibold uppercase tracking-wide mt-1">Daily</div>
+        <div class="h-1.5 rounded-full mt-2 overflow-hidden" style="background:rgba(178,178,178,.2)"><div id="tasks-daily-bar" class="h-full rounded-full" style="background:linear-gradient(90deg,#3b656b,#7eccd6);width:0%;transition:width .8s ease"></div></div>
+      </div>
+      <div class="glass-card rounded-2xl p-4 text-center">
+        <div class="text-2xl font-extrabold text-primary" id="tasks-weekly-count">0/0</div>
+        <div class="text-xs text-on-surface-variant font-semibold uppercase tracking-wide mt-1">Weekly</div>
+        <div class="h-1.5 rounded-full mt-2 overflow-hidden" style="background:rgba(178,178,178,.2)"><div id="tasks-weekly-bar" class="h-full rounded-full" style="background:linear-gradient(90deg,#56606a,#8ea4af);width:0%;transition:width .8s ease"></div></div>
+      </div>
+      <div class="glass-card rounded-2xl p-4 text-center">
+        <div class="text-2xl font-extrabold text-primary" id="tasks-monthly-count">0/0</div>
+        <div class="text-xs text-on-surface-variant font-semibold uppercase tracking-wide mt-1">Monthly</div>
+        <div class="h-1.5 rounded-full mt-2 overflow-hidden" style="background:rgba(178,178,178,.2)"><div id="tasks-monthly-bar" class="h-full rounded-full" style="background:linear-gradient(90deg,#5c5f62,#9da0a3);width:0%;transition:width .8s ease"></div></div>
+      </div>
+    </div>
+
+    <!-- Tab bar -->
+    <div class="tab-bar mb-6 fade-in stagger-2">
+      <button class="tab-btn active" id="tab-daily" onclick="switchTaskTab('daily')">Daily</button>
+      <button class="tab-btn" id="tab-weekly" onclick="switchTaskTab('weekly')">Weekly</button>
+      <button class="tab-btn" id="tab-monthly" onclick="switchTaskTab('monthly')">Monthly</button>
+    </div>
+
+    <!-- Task lists -->
+    <div id="tasks-daily-list" class="fade-in stagger-3"></div>
+    <div id="tasks-weekly-list" class="hidden fade-in"></div>
+    <div id="tasks-monthly-list" class="hidden fade-in"></div>
+
+    <div id="tasks-empty" class="hidden flex flex-col items-center py-16 text-center">
+      <div class="w-20 h-20 rounded-full glass-teal flex items-center justify-center mb-6">
+        <span class="material-symbols-outlined text-4xl text-primary">checklist</span>
+      </div>
+      <p class="text-on-surface font-semibold text-lg">No tasks yet</p>
+      <p class="text-on-surface-variant text-sm mt-2">Tap + to add your first habit</p>
+    </div>
+  </main>
+  <div class="nav-pill"><div class="nav-pill-inner">
+    <button class="nav-btn" onclick="navigate('dashboard')" data-tab="dashboard"><span class="material-symbols-outlined">home</span><span class="nav-label">Home</span></button>
+    <button class="nav-btn active" onclick="navigate('tasks')" data-tab="tasks"><span class="material-symbols-outlined fill-icon">checklist</span><span class="nav-label">Tasks</span></button>
+    <button class="nav-btn" onclick="navigate('checkin')" data-tab="checkin"><span class="material-symbols-outlined">self_improvement</span><span class="nav-label">Reflect</span></button>
+    <button class="nav-btn" onclick="navigate('capsules')" data-tab="capsules"><span class="material-symbols-outlined">inventory_2</span><span class="nav-label">Capsules</span></button>
+    <button class="nav-btn" onclick="navigate('mirror')" data-tab="mirror"><span class="material-symbols-outlined">history_edu</span><span class="nav-label">Mirror</span></button>
+  </div></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ CHECK-IN -->
+<div id="screen-checkin" class="screen hidden" style="padding-bottom:110px">
+  <header class="top-bar">
+    <div class="flex items-center justify-between px-6 py-4">
+      <div class="flex items-center gap-3">
+        <div id="ci-avatar" class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold glass-teal" style="color:#1a454b"></div>
+        <span class="font-bold text-primary text-lg tracking-tight">InnerTrack</span>
+      </div>
+      <button onclick="showNotification()" class="material-symbols-outlined text-on-surface-variant">notifications</button>
+    </div>
+  </header>
+  <main class="pt-10 pb-8 px-6 max-w-2xl mx-auto">
+    <div class="w-full mb-10 fade-in">
+      <h1 class="text-4xl font-extrabold tracking-tight text-on-surface mb-2">Weekly<br>Reflection</h1>
+      <p class="text-on-surface-variant leading-relaxed text-sm">Take a moment to tune into your internal frequency.</p>
+    </div>
+    <div class="mb-8 fade-in stagger-1">
+      <div class="flex justify-between text-xs font-semibold text-on-surface-variant mb-2">
+        <span id="ci-progress-label">Question 1 of 5</span><span id="ci-progress-pct">20%</span>
+      </div>
+      <div class="h-1.5 w-full rounded-full overflow-hidden" style="background:rgba(178,178,178,.2)">
+        <div id="ci-progress-bar" class="h-full rounded-full transition-all duration-500" style="background:linear-gradient(90deg,#3b656b,#7eccd6);width:20%"></div>
+      </div>
+    </div>
+    <div class="glass-card rounded-2xl p-8 mb-6 relative overflow-hidden fade-in stagger-2">
+      <div class="absolute -top-16 -right-16 w-48 h-48 rounded-full pointer-events-none" style="background:rgba(191,234,241,.25);filter:blur(32px)"></div>
+      <span class="inline-block px-4 py-1.5 rounded-full text-xs font-semibold text-on-surface-variant mb-6 glass-subtle">
+        Check-in · <span id="ci-date-label">This Week</span>
+      </span>
+      <h2 class="text-2xl font-bold text-on-surface mb-8 leading-snug" id="ci-question"></h2>
+      <div id="ci-slider-zone" class="space-y-5 mb-8">
+        <div class="flex justify-between px-1">
+          <span id="ci-emoji-lo" class="text-3xl" style="filter:grayscale(.7);opacity:.5">😫</span>
+          <span id="ci-emoji-hi" class="text-3xl">✨</span>
+        </div>
+        <input type="range" min="0" max="100" value="50" id="ci-slider" oninput="updateSliderLabel(this.value)"/>
+        <div class="flex justify-between text-xs text-on-surface-variant px-1">
+          <span id="ci-label-lo">Low</span><span id="ci-label-hi">High</span>
+        </div>
+        <div class="text-center"><span id="ci-slider-val" class="text-2xl font-extrabold text-primary">50</span><span class="text-on-surface-variant text-sm ml-1">/ 100</span></div>
+      </div>
+      <div id="ci-choice-zone" class="hidden grid grid-cols-2 gap-3 mb-8"></div>
+      <div id="ci-text-zone" class="hidden mb-8">
+        <textarea id="ci-text-input" class="w-full input-field px-5 py-4 text-base rounded-xl" rows="4" placeholder="Share your thoughts…"></textarea>
+      </div>
+      <div class="flex justify-center">
+        <button onclick="nextCheckIn()" class="btn-primary flex items-center gap-3 px-8 py-4 font-semibold">
+          <span id="ci-btn-label">Next Question</span><span class="material-symbols-outlined" id="ci-btn-icon">arrow_forward</span>
+        </button>
+      </div>
+    </div>
+    <div class="grid grid-cols-2 gap-4 fade-in stagger-3">
+      <div class="glass-card rounded-xl p-5 flex flex-col gap-3">
+        <span class="material-symbols-outlined text-primary fill-icon">auto_awesome</span>
+        <h3 class="font-semibold text-on-surface text-sm">Last Week</h3>
+        <p class="text-xs text-on-surface-variant leading-relaxed" id="ci-last-week">You were feeling "Steady" last week.</p>
+      </div>
+      <div class="glass-card rounded-xl p-5 flex flex-col gap-3">
+        <span class="material-symbols-outlined text-primary fill-icon">lightbulb</span>
+        <h3 class="font-semibold text-on-surface text-sm">Insight</h3>
+        <p class="text-xs text-on-surface-variant leading-relaxed">Mornings show 15% higher energy for you.</p>
+      </div>
+    </div>
+  </main>
+  <div class="nav-pill"><div class="nav-pill-inner">
+    <button class="nav-btn" onclick="navigate('dashboard')" data-tab="dashboard"><span class="material-symbols-outlined">home</span><span class="nav-label">Home</span></button>
+    <button class="nav-btn" onclick="navigate('tasks')" data-tab="tasks"><span class="material-symbols-outlined">checklist</span><span class="nav-label">Tasks</span></button>
+    <button class="nav-btn active" onclick="navigate('checkin')" data-tab="checkin"><span class="material-symbols-outlined fill-icon">self_improvement</span><span class="nav-label">Reflect</span></button>
+    <button class="nav-btn" onclick="navigate('capsules')" data-tab="capsules"><span class="material-symbols-outlined">inventory_2</span><span class="nav-label">Capsules</span></button>
+    <button class="nav-btn" onclick="navigate('mirror')" data-tab="mirror"><span class="material-symbols-outlined">history_edu</span><span class="nav-label">Mirror</span></button>
+  </div></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ CAPSULES -->
+<div id="screen-capsules" class="screen hidden" style="padding-bottom:170px">
+  <header class="top-bar">
+    <div class="flex items-center justify-between px-6 py-4">
+      <button onclick="navigate('settings')" class="flex items-center gap-3">
+        <div id="cap-avatar" class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold glass-teal" style="color:#1a454b"></div>
+        <span class="font-bold text-primary text-lg tracking-tight">InnerTrack</span>
+      </button>
+      <button onclick="showNotification()" class="material-symbols-outlined text-on-surface-variant">notifications</button>
+    </div>
+  </header>
+  <main class="px-6 pt-8 max-w-2xl mx-auto">
+    <section class="mb-10 fade-in">
+      <h2 class="text-4xl font-extrabold tracking-tight text-on-surface mb-2">Time Capsules</h2>
+      <p class="text-on-surface-variant leading-relaxed text-sm max-w-sm">Preserve your thoughts for the future — locked until their designated time.</p>
+    </section>
+    <div class="space-y-5 fade-in stagger-1" id="capsules-list"></div>
+    <div id="capsules-empty" class="hidden flex flex-col items-center py-16 text-center">
+      <div class="w-20 h-20 rounded-full glass-teal flex items-center justify-center mb-6"><span class="material-symbols-outlined text-4xl text-primary">inventory_2</span></div>
+      <p class="text-on-surface font-semibold text-lg">No capsules yet</p>
+      <p class="text-on-surface-variant text-sm mt-2">Create your first time capsule below</p>
+    </div>
+  </main>
+  <div class="fixed z-40" style="bottom:96px;left:0;right:0;display:flex;justify-content:center;pointer-events:none">
+    <button onclick="navigate('create-capsule')" class="btn-primary px-8 py-4 flex items-center gap-3 font-semibold" style="pointer-events:auto;box-shadow:0 12px 40px rgba(59,101,107,.35)">
+      <span class="material-symbols-outlined">add</span> New Capsule
+    </button>
+  </div>
+  <div class="nav-pill"><div class="nav-pill-inner">
+    <button class="nav-btn" onclick="navigate('dashboard')" data-tab="dashboard"><span class="material-symbols-outlined">home</span><span class="nav-label">Home</span></button>
+    <button class="nav-btn" onclick="navigate('tasks')" data-tab="tasks"><span class="material-symbols-outlined">checklist</span><span class="nav-label">Tasks</span></button>
+    <button class="nav-btn" onclick="navigate('checkin')" data-tab="checkin"><span class="material-symbols-outlined">self_improvement</span><span class="nav-label">Reflect</span></button>
+    <button class="nav-btn active" onclick="navigate('capsules')" data-tab="capsules"><span class="material-symbols-outlined fill-icon">inventory_2</span><span class="nav-label">Capsules</span></button>
+    <button class="nav-btn" onclick="navigate('mirror')" data-tab="mirror"><span class="material-symbols-outlined">history_edu</span><span class="nav-label">Mirror</span></button>
+  </div></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ CREATE CAPSULE -->
+<div id="screen-create-capsule" class="screen hidden" style="padding-bottom:100px">
+  <header class="top-bar">
+    <div class="flex items-center justify-between px-6 py-4">
+      <div class="flex items-center gap-4">
+        <button onclick="navigate('capsules')" class="w-10 h-10 rounded-full glass-subtle flex items-center justify-center text-primary transition-all active:scale-90">
+          <span class="material-symbols-outlined">arrow_back</span>
+        </button>
+        <span class="font-bold text-primary text-lg tracking-tight">InnerTrack</span>
+      </div>
+      <div id="cc-avatar" class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold glass-teal" style="color:#1a454b"></div>
+    </div>
+  </header>
+  <main class="pt-6 pb-10 px-6 max-w-2xl mx-auto">
+    <section class="mb-10 fade-in">
+      <h2 class="text-4xl font-bold text-on-surface leading-tight tracking-tight mb-2">Time Capsule</h2>
+      <p class="text-on-surface-variant leading-relaxed text-sm">Preserve a moment for your future self to rediscover.</p>
+    </section>
+    <div class="space-y-7 fade-in stagger-1">
+      <div>
+        <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-widest mb-4 ml-2">FORMAT</label>
+        <div class="grid grid-cols-2 gap-4">
+          <button id="fmt-message" onclick="selectFormat('message')" class="flex flex-col items-center justify-center p-7 rounded-2xl transition-all duration-300 active:scale-95 glass-teal" style="color:#1a454b">
+            <span class="material-symbols-outlined text-4xl mb-2">message</span><span class="font-semibold">Message</span>
+          </button>
+          <button id="fmt-voice" onclick="selectFormat('voice')" class="flex flex-col items-center justify-center p-7 rounded-2xl transition-all duration-300 active:scale-95 glass-subtle" style="color:#5e5f5f">
+            <span class="material-symbols-outlined text-4xl mb-2">mic</span><span class="font-semibold">Voice Note</span>
+          </button>
+        </div>
+      </div>
+      <div><label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-widest mb-3 ml-2">TITLE</label><input id="cc-title" class="input-field h-14 px-6 text-base" type="text" placeholder="Give your capsule a name…"/></div>
+      <div id="cc-message-area">
+        <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-widest mb-3 ml-2">YOUR MESSAGE</label>
+        <div class="glass-card rounded-2xl p-5 min-h-48 flex flex-col">
+          <textarea id="cc-content" class="w-full flex-1 text-base text-on-surface placeholder-outline leading-relaxed" rows="6" placeholder="What do you want to tell yourself? Write with honesty and intention…"></textarea>
+        </div>
+      </div>
+      <div id="cc-voice-area" class="hidden">
+        <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-widest mb-3 ml-2">VOICE NOTE</label>
+        <div class="glass-card rounded-2xl p-8 flex flex-col items-center gap-4">
+          <button id="voice-btn" onclick="toggleRecording()" class="w-20 h-20 rounded-full flex items-center justify-center transition-all glass-teal" style="color:#3b656b">
+            <span class="material-symbols-outlined text-4xl" id="voice-icon">mic</span>
+          </button>
+          <p id="voice-status" class="text-sm text-on-surface-variant">Tap to record</p>
+          <p id="voice-timer" class="font-bold text-on-surface text-lg hidden">0:00</p>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-widest mb-3 ml-2">UNLOCK DATE</label>
+          <div class="glass-card rounded-xl p-4 flex items-center justify-between">
+            <div><p class="text-xs text-on-surface-variant">Release on</p><input type="date" id="cc-date" class="bg-transparent text-on-surface font-bold text-base outline-none border-none p-0"/></div>
+            <span class="material-symbols-outlined text-primary">calendar_today</span>
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-widest mb-3 ml-2">NOTIFY ME</label>
+          <div class="glass-card rounded-xl p-4 flex items-center justify-between" style="min-height:74px">
+            <span class="text-on-surface font-medium text-sm">Alert on unlock</span>
+            <label class="toggle"><input type="checkbox" checked id="cc-notify"/><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+          </div>
+        </div>
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-widest mb-3 ml-2">MOOD TAG</label>
+        <div class="flex gap-2 flex-wrap" id="tag-container">
+          <button onclick="selectTag(this,'Optimistic')" class="chip" style="background:rgba(191,234,241,.7);color:#1a454b">Optimistic</button>
+          <button onclick="selectTag(this,'Reflective')" class="chip" style="background:rgba(233,232,232,.5);color:#5e5f5f">Reflective</button>
+          <button onclick="selectTag(this,'Energetic')" class="chip" style="background:rgba(233,232,232,.5);color:#5e5f5f">Energetic</button>
+          <button onclick="selectTag(this,'Balanced')" class="chip" style="background:rgba(233,232,232,.5);color:#5e5f5f">Balanced</button>
+          <button onclick="selectTag(this,'Hopeful')" class="chip" style="background:rgba(233,232,232,.5);color:#5e5f5f">Hopeful</button>
+        </div>
+      </div>
+      <div id="cc-error" class="hidden text-center text-sm py-3 px-5 rounded-xl" style="background:rgba(254,137,131,.25);color:#9f403d;border:1px solid rgba(254,137,131,.4)"></div>
+      <button onclick="sealCapsule()" class="btn-primary w-full py-5 text-lg font-bold flex items-center justify-center gap-2">
+        <span class="material-symbols-outlined">lock</span> Seal Capsule
+      </button>
+    </div>
+  </main>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ MIRROR TIMELINE -->
+<div id="screen-mirror" class="screen hidden" style="padding-bottom:110px">
+  <header class="top-bar">
+    <div class="flex items-center justify-between px-6 py-4">
+      <div class="flex items-center gap-3">
+        <div id="mir-avatar" class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold glass-teal" style="color:#1a454b"></div>
+        <span class="font-bold text-primary text-lg tracking-tight">InnerTrack</span>
+      </div>
+      <button onclick="showNotification()" class="material-symbols-outlined text-on-surface-variant">notifications</button>
+    </div>
+  </header>
+  <main class="max-w-2xl mx-auto px-6 pt-10">
+    <section class="mb-12 fade-in">
+      <h2 class="text-4xl font-extrabold tracking-tight text-on-surface mb-3">The Mirror</h2>
+      <p class="text-on-surface-variant leading-relaxed text-sm">Reflecting on your journey through time.</p>
+    </section>
+    <div class="relative pl-8" id="timeline-container">
+      <div class="timeline-line"></div>
+    </div>
+    <div id="mirror-empty" class="hidden flex flex-col items-center py-16 text-center">
+      <div class="w-20 h-20 rounded-full glass-teal flex items-center justify-center mb-6"><span class="material-symbols-outlined text-4xl text-primary">history_edu</span></div>
+      <p class="text-on-surface font-semibold text-lg">Your journey starts here</p>
+      <p class="text-xs text-on-surface-variant mt-2">Complete a check-in or create a capsule</p>
+    </div>
+  </main>
+  <div class="nav-pill"><div class="nav-pill-inner">
+    <button class="nav-btn" onclick="navigate('dashboard')" data-tab="dashboard"><span class="material-symbols-outlined">home</span><span class="nav-label">Home</span></button>
+    <button class="nav-btn" onclick="navigate('tasks')" data-tab="tasks"><span class="material-symbols-outlined">checklist</span><span class="nav-label">Tasks</span></button>
+    <button class="nav-btn" onclick="navigate('checkin')" data-tab="checkin"><span class="material-symbols-outlined">self_improvement</span><span class="nav-label">Reflect</span></button>
+    <button class="nav-btn" onclick="navigate('capsules')" data-tab="capsules"><span class="material-symbols-outlined">inventory_2</span><span class="nav-label">Capsules</span></button>
+    <button class="nav-btn active" onclick="navigate('mirror')" data-tab="mirror"><span class="material-symbols-outlined fill-icon">history_edu</span><span class="nav-label">Mirror</span></button>
+  </div></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ PROJECT DETAILS -->
+<div id="screen-project" class="screen hidden" style="padding-bottom:110px">
+  <header class="top-bar">
+    <div class="flex items-center justify-between px-6 py-4">
+      <div class="flex items-center gap-3">
+        <button onclick="navigate('dashboard')" class="w-10 h-10 rounded-full glass-subtle flex items-center justify-center text-primary active:scale-90 transition-transform">
+          <span class="material-symbols-outlined">arrow_back</span>
+        </button>
+        <span class="font-bold text-primary text-lg tracking-tight">InnerTrack</span>
+      </div>
+      <div id="proj-avatar" class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold glass-teal" style="color:#1a454b"></div>
+    </div>
+  </header>
+  <main class="pt-6 px-6 max-w-2xl mx-auto space-y-9">
+    <section class="fade-in">
+      <div class="flex items-center gap-2 text-xs font-bold text-primary uppercase tracking-widest mb-2">
+        <span class="w-2 h-2 rounded-full bg-primary pulse-dot"></span>
+        <span id="proj-status">In Progress</span>
+      </div>
+      <h1 class="text-4xl font-extrabold tracking-tight text-on-surface leading-tight mb-2" id="proj-title">Goal Title</h1>
+      <p class="text-on-surface-variant leading-relaxed max-w-xl text-sm" id="proj-desc">Goal description</p>
+      <!-- Edit goal button -->
+      <div class="mt-4" id="proj-edit-zone"></div>
+    </section>
+
+    <!-- Bento stats -->
+    <section class="grid grid-cols-12 gap-4 fade-in stagger-1">
+      <div class="col-span-8 glass-card rounded-2xl p-7 relative overflow-hidden">
+        <h3 class="text-xs font-semibold text-on-surface-variant uppercase tracking-widest mb-2">Total Progress</h3>
+        <div class="flex items-baseline gap-2 mb-5">
+          <span class="text-6xl font-extrabold text-primary tracking-tight" id="proj-pct">65%</span>
+          <span class="text-on-surface-variant text-sm" id="proj-trend">+12% this month</span>
+        </div>
+        <div class="h-3 w-full rounded-full overflow-hidden" style="background:rgba(178,178,178,.2)">
+          <div id="proj-bar" class="h-full rounded-full transition-all duration-1000 ease-out" style="background:linear-gradient(90deg,#3b656b,#7eccd6);width:65%"></div>
+        </div>
+        <div class="mt-8 h-20 flex items-end gap-1" id="proj-chart"></div>
+      </div>
+      <div class="col-span-4 glass-card rounded-2xl p-5 flex flex-col justify-center gap-5">
+        <div>
+          <span class="material-symbols-outlined text-primary text-xl mb-1">hourglass_empty</span>
+          <h4 class="text-on-surface font-bold text-lg" id="proj-days">84 Days</h4>
+          <p class="text-on-surface-variant text-xs">Remaining</p>
+        </div>
+        <div class="h-px" style="background:rgba(178,178,178,.2)"></div>
+        <div>
+          <span class="material-symbols-outlined text-primary text-xl mb-1">rocket_launch</span>
+          <h4 class="text-on-surface font-bold" id="proj-momentum">High</h4>
+          <p class="text-on-surface-variant text-xs">Momentum</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Notes -->
+    <section class="fade-in stagger-2 space-y-5">
+      <div class="flex justify-between items-center">
+        <h2 class="text-xl font-bold tracking-tight">Notes & Insights</h2>
+        <button onclick="addNote()" class="text-primary font-bold text-sm flex items-center gap-1 glass-teal px-3 py-1.5 rounded-full">
+          <span class="material-symbols-outlined text-sm">add</span> Add
+        </button>
+      </div>
+      <div id="proj-notes" class="space-y-4"></div>
+    </section>
+
+    <!-- Updates -->
+    <section class="fade-in stagger-3 space-y-5">
+      <h2 class="text-xl font-bold tracking-tight">Recent Updates</h2>
+      <div id="proj-updates" class="space-y-6"></div>
+    </section>
+
+    <!-- Log Progress -->
+    <section class="fade-in stagger-4 pb-8">
+      <div class="glass-card rounded-2xl p-6">
+        <h3 class="font-semibold text-on-surface mb-4">Log Progress Update</h3>
+        <textarea id="update-text" class="w-full input-field px-5 py-4 text-sm rounded-xl mb-4" rows="3" placeholder="What did you accomplish?…"></textarea>
+        <div class="flex items-center gap-4">
+          <input type="range" min="0" max="100" id="update-pct" class="flex-1" oninput="document.getElementById('update-pct-val').textContent=this.value+'%'"/>
+          <span class="text-primary font-bold min-w-12 text-right" id="update-pct-val">50%</span>
+        </div>
+        <button onclick="logUpdate()" class="mt-4 btn-primary w-full py-4 font-semibold">Log Update</button>
+      </div>
+    </section>
+  </main>
+  <div class="nav-pill"><div class="nav-pill-inner">
+    <button class="nav-btn active" onclick="navigate('dashboard')" data-tab="dashboard"><span class="material-symbols-outlined fill-icon">home</span><span class="nav-label">Home</span></button>
+    <button class="nav-btn" onclick="navigate('tasks')" data-tab="tasks"><span class="material-symbols-outlined">checklist</span><span class="nav-label">Tasks</span></button>
+    <button class="nav-btn" onclick="navigate('checkin')" data-tab="checkin"><span class="material-symbols-outlined">self_improvement</span><span class="nav-label">Reflect</span></button>
+    <button class="nav-btn" onclick="navigate('capsules')" data-tab="capsules"><span class="material-symbols-outlined">inventory_2</span><span class="nav-label">Capsules</span></button>
+    <button class="nav-btn" onclick="navigate('mirror')" data-tab="mirror"><span class="material-symbols-outlined">history_edu</span><span class="nav-label">Mirror</span></button>
+  </div></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ SETTINGS -->
+<div id="screen-settings" class="screen hidden" style="padding-bottom:120px">
+  <header class="top-bar">
+    <div class="grid grid-cols-3 items-center px-6 py-4">
+      <div id="set-avatar" class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold glass-teal justify-self-start" style="color:#1a454b"></div>
+      <span class="justify-self-center font-bold text-primary text-lg tracking-tight">InnerTrack</span>
+      <button onclick="showNotification()" class="material-symbols-outlined text-on-surface-variant justify-self-end">notifications</button>
+    </div>
+  </header>
+  <main class="max-w-2xl mx-auto px-6 pt-10 pb-10">
+    <section class="mb-10 fade-in">
+      <div class="glass-card rounded-2xl p-7 flex items-center gap-5">
+        <div id="set-big-avatar" class="w-20 h-20 rounded-full flex items-center justify-center text-2xl font-bold glass-teal" style="color:#1a454b"></div>
+        <div>
+          <h2 class="text-2xl font-bold text-on-surface" id="set-display-name">Alex</h2>
+          <p class="text-on-surface-variant" id="set-email">user@example.com</p>
+          <p class="text-xs text-primary font-semibold mt-1">Inner Circle Member</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="mb-8 fade-in stagger-1 space-y-4">
+      <h3 class="text-xs font-bold text-on-surface-variant uppercase tracking-widest">Account</h3>
+      <button onclick="showEditProfile()" class="glass-card rounded-xl p-5 w-full flex items-center justify-between">
+        <div class="flex items-center gap-4">
+          <span class="material-symbols-outlined text-primary">manage_accounts</span>
+          <span class="font-medium text-on-surface">Edit Profile</span>
+        </div>
+        <span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+      </button>
+      <button onclick="handleLogout()" class="glass-card rounded-xl p-5 w-full flex items-center justify-between">
+        <div class="flex items-center gap-4">
+          <span class="material-symbols-outlined text-error">logout</span>
+          <span class="font-medium text-on-surface">Log Out</span>
+        </div>
+        <span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+      </button>
+    </section>
+
+    <section class="fade-in stagger-2">
+      <h3 class="text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-4">My Goals</h3>
+      <div id="settings-goals" class="space-y-4"></div>
+    </section>
+  </main>
+  <div class="nav-pill"><div class="nav-pill-inner">
+    <button class="nav-btn" onclick="navigate('dashboard')" data-tab="dashboard"><span class="material-symbols-outlined">home</span><span class="nav-label">Home</span></button>
+    <button class="nav-btn" onclick="navigate('tasks')" data-tab="tasks"><span class="material-symbols-outlined">checklist</span><span class="nav-label">Tasks</span></button>
+    <button class="nav-btn" onclick="navigate('checkin')" data-tab="checkin"><span class="material-symbols-outlined">self_improvement</span><span class="nav-label">Reflect</span></button>
+    <button class="nav-btn" onclick="navigate('capsules')" data-tab="capsules"><span class="material-symbols-outlined">inventory_2</span><span class="nav-label">Capsules</span></button>
+    <button class="nav-btn" onclick="navigate('mirror')" data-tab="mirror"><span class="material-symbols-outlined">history_edu</span><span class="nav-label">Mirror</span></button>
+  </div></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ TOAST -->
+<div id="toast" class="fixed z-[200] left-1/2 bottom-28 transition-all duration-500" style="transform:translateX(-50%) translateY(12px);opacity:0;pointer-events:none">
+  <div class="glass rounded-full px-6 py-3 flex items-center gap-3" style="box-shadow:0 8px 32px rgba(49,70,80,.15)">
+    <span class="material-symbols-outlined text-primary text-xl fill-icon" id="toast-icon">check_circle</span>
+    <span class="text-on-surface font-medium text-sm" id="toast-msg">Done!</span>
+  </div>
+</div>
+
+<!-- ═══ MODALS ═══════════════════════════════════════════════════ -->
+
+<!-- Edit Profile Modal -->
+<div id="edit-modal" class="fixed inset-0 z-[150] flex items-end justify-center hidden" style="background:rgba(20,30,30,.35);backdrop-filter:blur(6px)">
+  <div class="w-full max-w-lg rounded-t-3xl p-8 space-y-6 glass" style="border-bottom:none">
+    <h2 class="text-2xl font-bold text-on-surface">Edit Profile</h2>
+    <div><label class="text-xs font-semibold text-on-surface-variant uppercase tracking-widest mb-2 block ml-2">Display Name</label><input id="edit-name" class="input-field h-14 px-6 text-base" type="text"/></div>
+    <div class="flex gap-3 pt-2">
+      <button onclick="closeEditModal()" class="flex-1 py-4 rounded-full font-semibold text-on-surface-variant glass-subtle">Cancel</button>
+      <button onclick="saveProfile()" class="flex-1 btn-primary py-4 font-semibold">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Note Modal -->
+<div id="note-modal" class="fixed inset-0 z-[150] flex items-end justify-center hidden" style="background:rgba(20,30,30,.35);backdrop-filter:blur(6px)">
+  <div class="w-full max-w-lg rounded-t-3xl p-8 space-y-5 glass" style="border-bottom:none">
+    <h2 class="text-xl font-bold text-on-surface">Add Note</h2>
+    <div><label class="text-xs font-semibold text-on-surface-variant uppercase tracking-widest mb-2 block ml-2">Title</label><input id="note-title" class="input-field h-14 px-6 text-base" type="text" placeholder="Note title…"/></div>
+    <div><label class="text-xs font-semibold text-on-surface-variant uppercase tracking-widest mb-2 block ml-2">Content</label><textarea id="note-content" class="input-field px-6 py-4 text-base rounded-xl" rows="4" placeholder="What's on your mind?…"></textarea></div>
+    <div class="flex gap-3 pt-2">
+      <button onclick="closeNoteModal()" class="flex-1 py-4 rounded-full font-semibold text-on-surface-variant glass-subtle">Cancel</button>
+      <button onclick="saveNote()" class="flex-1 btn-primary py-4 font-semibold">Save Note</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Goal Modal -->
+<div id="edit-goal-modal" class="fixed inset-0 z-[150] flex items-end justify-center hidden" style="background:rgba(20,30,30,.35);backdrop-filter:blur(6px)">
+  <div class="w-full max-w-lg rounded-t-3xl p-8 space-y-6 glass" style="border-bottom:none">
+    <div class="flex items-center justify-between">
+      <h2 class="text-2xl font-bold text-on-surface">Edit Goal</h2>
+      <span id="edit-goal-badge" class="goal-badge"></span>
+    </div>
+    <div>
+      <label class="text-xs font-semibold text-on-surface-variant uppercase tracking-widest mb-2 block ml-2">Goal Title</label>
+      <input id="edit-goal-title" class="input-field h-14 px-6 text-base" type="text" placeholder="Your goal…"/>
+    </div>
+    <div>
+      <label class="text-xs font-semibold text-on-surface-variant uppercase tracking-widest mb-2 block ml-2">Description (optional)</label>
+      <textarea id="edit-goal-desc" class="input-field px-6 py-4 text-base rounded-xl" rows="3" placeholder="A brief description…"></textarea>
+    </div>
+    <div>
+      <label class="text-xs font-semibold text-on-surface-variant uppercase tracking-widest mb-2 block ml-2">New Deadline</label>
+      <input id="edit-goal-deadline" class="input-field h-14 px-6 text-base" type="date"/>
+    </div>
+    <p class="text-xs text-on-surface-variant glass-subtle rounded-xl p-3">⏱ Goals can be edited once per month, or at any time when completed (100%).</p>
+    <div class="flex gap-3 pt-2">
+      <button onclick="closeEditGoalModal()" class="flex-1 py-4 rounded-full font-semibold text-on-surface-variant glass-subtle">Cancel</button>
+      <button onclick="saveGoalEdit()" class="flex-1 btn-primary py-4 font-semibold">Save Goal</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Task Modal -->
+<div id="add-task-modal" class="fixed inset-0 z-[150] flex items-end justify-center hidden" style="background:rgba(20,30,30,.35);backdrop-filter:blur(6px)">
+  <div class="w-full max-w-lg rounded-t-3xl p-8 space-y-6 glass" style="border-bottom:none">
+    <h2 class="text-2xl font-bold text-on-surface">New Task</h2>
+    <div>
+      <label class="text-xs font-semibold text-on-surface-variant uppercase tracking-widest mb-3 block ml-2">EMOJI & NAME</label>
+      <div class="flex gap-3">
+        <input id="task-emoji" class="input-field h-14 px-4 text-2xl text-center" type="text" placeholder="🎯" maxlength="2" style="width:64px;flex-shrink:0"/>
+        <input id="task-name" class="input-field h-14 px-6 text-base flex-1" type="text" placeholder="Task name…"/>
+      </div>
+    </div>
+    <div>
+      <label class="text-xs font-semibold text-on-surface-variant uppercase tracking-widest mb-3 block ml-2">FREQUENCY</label>
+      <div class="tab-bar">
+        <button class="tab-btn active" id="freq-daily" onclick="selectFreq('daily')">Daily</button>
+        <button class="tab-btn" id="freq-weekly" onclick="selectFreq('weekly')">Weekly</button>
+        <button class="tab-btn" id="freq-monthly" onclick="selectFreq('monthly')">Monthly</button>
+      </div>
+    </div>
+    <div class="flex gap-3 pt-2">
+      <button onclick="closeAddTask()" class="flex-1 py-4 rounded-full font-semibold text-on-surface-variant glass-subtle">Cancel</button>
+      <button onclick="saveTask()" class="flex-1 btn-primary py-4 font-semibold">Add Task</button>
+    </div>
+  </div>
+</div>
+
+<!-- Open Capsule Modal -->
+<div id="capsule-open-modal" class="fixed inset-0 z-[150] flex items-center justify-center hidden" style="background:rgba(20,30,30,.5);backdrop-filter:blur(8px);padding:24px">
+  <div class="w-full max-w-lg glass rounded-3xl p-8 space-y-6 slide-up">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 rounded-2xl glass-teal flex items-center justify-center"><span class="material-symbols-outlined text-primary text-2xl">lock_open</span></div>
+        <div><h2 class="text-xl font-bold text-on-surface" id="co-title">Capsule Title</h2><p class="text-xs text-on-surface-variant" id="co-date">Sealed on…</p></div>
+      </div>
+      <button onclick="closeCapsuleModal()" class="w-10 h-10 rounded-full glass-subtle flex items-center justify-center text-on-surface-variant"><span class="material-symbols-outlined">close</span></button>
+    </div>
+    <div class="glass-subtle rounded-2xl p-6">
+      <p class="text-on-surface leading-relaxed text-sm" id="co-content">…</p>
+    </div>
+    <div id="co-tag-row"></div>
+    <button onclick="closeCapsuleModal()" class="btn-primary w-full py-4 font-semibold">Close</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ JS -->
+<script>
+// ─────────────────────────────────────────── STORAGE
+const DB = {
+  get: k => { try { return JSON.parse(localStorage.getItem('it_'+k)) } catch { return null } },
+  set: (k,v) => localStorage.setItem('it_'+k, JSON.stringify(v)),
+  rm: k => localStorage.removeItem('it_'+k)
+};
+
+const QUOTES = [
+  '"The best way to predict the future is to create it."',
+  '"Every day is a new beginning. Take a deep breath and start again."',
+  '"Small steps in the right direction can turn out to be the biggest step of your life."',
+  '"Your present circumstances don\'t determine where you can go."',
+  '"The secret of getting ahead is getting started."',
+  '"Believe you can and you\'re halfway there."',
+  '"Progress, not perfection."',
+];
+
+const GOAL_ICONS = { work: 'compass_calibration', vibe: 'vibration', realist: 'fact_check' };
+const GOAL_COLORS = { work: 'rgba(191,234,241,.5)', vibe: 'rgba(218,228,239,.5)', realist: 'rgba(220,220,225,.5)' };
+const GOAL_ACCENT = { work: '#3b656b', vibe: '#56606a', realist: '#5c5f62' };
+const GOAL_LABELS = { work: 'WORK', vibe: 'VIBE', realist: 'REALIST' };
+
+let state = {
+  screen: 'splash',
+  signupStep: 1,
+  signupRhythm: 'Daily',
+  ciStep: 0,
+  ciAnswers: [],
+  selectedGoalKey: 'work',
+  selectedCapsuleTag: 'Optimistic',
+  selectedFormat: 'message',
+  recording: false,
+  recSeconds: 0,
+  activeTaskTab: 'daily',
+  activeTaskFreq: 'daily',
+};
+
+const CI_QUESTIONS = [
+  { q: 'How energized are you feeling?', type: 'slider', lo: 'Exhausted', hi: 'Ecstatic', elo: '😫', ehi: '✨' },
+  { q: 'How focused have you been this week?', type: 'slider', lo: 'Scattered', hi: 'Laser-focused', elo: '🌀', ehi: '🎯' },
+  { q: 'What\'s your overall emotional state?', type: 'choice', choices: ['😊 Joyful','😌 Calm','😤 Frustrated','🤔 Reflective','😰 Anxious','💪 Motivated'] },
+  { q: 'How balanced does life feel right now?', type: 'slider', lo: 'Overwhelmed', hi: 'Perfectly balanced', elo: '⚖️', ehi: '🌿' },
+  { q: 'Any wins or highlights to celebrate?', type: 'text' },
+];
+
+// ─────────────────────────────────────────── NAVIGATION
+function navigate(screen) {
+  const prev = document.getElementById('screen-'+state.screen);
+  const next = document.getElementById('screen-'+screen);
+  if (!next) return;
+  if (prev) prev.classList.add('hidden');
+  next.classList.remove('hidden');
+  next.scrollTop = 0;
+  state.screen = screen;
+  const inits = { dashboard: initDashboard, capsules: initCapsules, mirror: initMirror, checkin: initCheckIn, settings: initSettings, project: initProject, 'create-capsule': initCreateCapsule, tasks: initTasks };
+  if (inits[screen]) inits[screen]();
+}
+
+// ─────────────────────────────────────────── AUTH
+function handleLogin() {
+  const id = document.getElementById('login-username').value.trim();
+  const pw = document.getElementById('login-password').value;
+  const users = DB.get('users') || {};
+  const err = document.getElementById('login-error');
+  const user = Object.values(users).find(u => u.username === id || u.email === id);
+  if (!user) { err.textContent='No account found. Please sign up first.'; err.classList.remove('hidden'); return; }
+  if (user.password !== btoa(pw)) { err.textContent='Incorrect password. Please try again.'; err.classList.remove('hidden'); return; }
+  err.classList.add('hidden');
+  DB.set('session', user.username);
+  navigate('dashboard');
+}
+
+function handleSignup() {
+  const name = document.getElementById('su-name').value.trim();
+  const email = document.getElementById('su-email').value.trim();
+  const pw = document.getElementById('su-password').value;
+  const goalWork = document.getElementById('su-goal-work').value.trim() || '6-Month Career Goal';
+  const goalVibe = document.getElementById('su-goal-vibe').value.trim() || '6-Month Vibration Goal';
+  const goalRealist = document.getElementById('su-goal-realist').value.trim() || '6-Month Finish Line';
+  const username = email.split('@')[0].replace(/[^a-z0-9]/gi,'');
+  const users = DB.get('users') || {};
+  users[username] = { username, displayName: name, email, password: btoa(pw) };
+  DB.set('users', users);
+  DB.set('session', username);
+  const now = new Date();
+  const deadline = new Date(now.getTime()+180*86400000).toISOString();
+  const goals = {
+    work: { key:'work', title: goalWork, desc:'Strategic advancement towards your career ambitions.', progress:0, notes:[], updates:[], deadline, lastEdited: null },
+    vibe: { key:'vibe', title: goalVibe, desc:'Aligning daily energy with intentional frequency.', progress:0, notes:[], updates:[], deadline, lastEdited: null },
+    realist: { key:'realist', title: goalRealist, desc:'Practical milestones grounded in reality.', progress:0, notes:[], updates:[], deadline, lastEdited: null },
+  };
+  DB.set('goals_'+username, goals);
+  DB.set('capsules_'+username, []);
+  DB.set('timeline_'+username, []);
+  DB.set('tasks_'+username, { daily:[], weekly:[], monthly:[] });
+  showToast('check_circle', 'Welcome to InnerTrack, '+name+'! 🎉');
+  navigate('dashboard');
+}
+
+function handleLogout() {
+  DB.rm('session');
+  document.getElementById('login-username').value = '';
+  document.getElementById('login-password').value = '';
+  navigate('login');
+}
+
+function getSession() { const un=DB.get('session'); if(!un) return null; const users=DB.get('users')||{}; return users[un]||null; }
+function getUsername() { return DB.get('session'); }
+function getGoals() { return DB.get('goals_'+getUsername()) || {}; }
+function setGoals(g) { DB.set('goals_'+getUsername(), g); }
+function getCapsules() { return DB.get('capsules_'+getUsername()) || []; }
+function setCapsules(c) { DB.set('capsules_'+getUsername(), c); }
+function getTimeline() { return DB.get('timeline_'+getUsername()) || []; }
+function setTimeline(t) { DB.set('timeline_'+getUsername(), t); }
+function addTimelineEntry(e) { const t=getTimeline(); t.unshift(e); setTimeline(t); }
+function getTasks() { return DB.get('tasks_'+getUsername()) || { daily:[], weekly:[], monthly:[] }; }
+function setTasks(t) { DB.set('tasks_'+getUsername(), t); }
+
+// ─────────────────────────────────────────── SIGNUP STEPS
+function signupNext(step) {
+  if (step === 1) {
+    const name=document.getElementById('su-name').value.trim();
+    const email=document.getElementById('su-email').value.trim();
+    const pw=document.getElementById('su-password').value;
+    const err=document.getElementById('signup-error1');
+    if (!name){err.textContent='Please enter your display name.';err.classList.remove('hidden');return;}
+    if (!email.includes('@')){err.textContent='Please enter a valid email.';err.classList.remove('hidden');return;}
+    if (pw.length<6){err.textContent='Password must be at least 6 characters.';err.classList.remove('hidden');return;}
+    const users=DB.get('users')||{};
+    if (Object.values(users).find(u=>u.email===email)){err.textContent='Email already in use. Please log in.';err.classList.remove('hidden');return;}
+    err.classList.add('hidden'); showSignupStep(2);
+  } else if (step===2) { showSignupStep(3); }
+}
+function signupBack() { showSignupStep(state.signupStep-1); }
+function showSignupStep(n) {
+  state.signupStep=n;
+  ['1','2','3'].forEach(i=>document.getElementById('signup-s'+i).classList.toggle('hidden',n!==parseInt(i)));
+  document.getElementById('signup-step-label').textContent=`STEP ${n}/3`;
+  document.getElementById('signup-progress').style.width=(n/3*100)+'%';
+  const labels=['Account Details','Set Intentions','Preferences'];
+  document.querySelector('#screen-signup nav span:last-child').textContent=labels[n-1];
+}
+function selectRhythm(btn,val) {
+  state.signupRhythm=val;
+  document.querySelectorAll('#signup-s3 .chip').forEach(b=>{b.style.background='rgba(233,232,232,.5)';b.style.color='#5e5f5f';});
+  btn.style.background='rgba(191,234,241,.7)'; btn.style.color='#1a454b';
+}
+
+// ─────────────────────────────────────────── DASHBOARD
+function initDashboard() {
+  const user=getSession(); if(!user){navigate('login');return;}
+  const name=user.displayName.split(' ')[0];
+  document.getElementById('dash-name').textContent=name;
+  document.getElementById('dash-avatar').textContent=name[0].toUpperCase();
+  document.getElementById('dash-quote').textContent=QUOTES[Math.floor(Math.random()*QUOTES.length)];
+  // Tasks quick summary
+  const tasks=getTasks();
+  const daily=tasks.daily||[];
+  const doneCnt=daily.filter(t=>isTaskDone(t)).length;
+  const total=daily.length;
+  document.getElementById('dash-tasks-label').textContent=total===0?'No daily tasks yet':`${doneCnt}/${total} completed today`;
+  renderGoalCards();
+}
+
+function renderGoalCards() {
+  const goals=getGoals();
+  const container=document.getElementById('goal-cards-container');
+  container.innerHTML='';
+  Object.entries(goals).forEach(([key,g])=>{
+    const pct=g.progress||0;
+    const deadline=g.deadline?new Date(g.deadline):new Date();
+    const daysLeft=Math.max(0,Math.ceil((deadline-Date.now())/86400000));
+    const canEdit=canEditGoal(key);
+    const editInfo=canEdit?'':getEditLockMessage(key);
+    const accent=GOAL_ACCENT[key];
+    const card=document.createElement('div');
+    card.className='glass-card card rounded-2xl p-7 relative overflow-hidden cursor-pointer';
+    card.onclick=()=>{state.selectedGoalKey=key;navigate('project');};
+    card.innerHTML=`
+      <div class="absolute top-0 right-0 w-32 h-32 rounded-full opacity-30 pointer-events-none -mr-8 -mt-8" style="background:radial-gradient(circle,${accent}44,transparent);filter:blur(20px)"></div>
+      <div class="flex items-start justify-between mb-6">
+        <div class="w-12 h-12 rounded-xl flex items-center justify-center" style="background:${GOAL_COLORS[key]};">
+          <span class="material-symbols-outlined" style="color:${accent}">${GOAL_ICONS[key]}</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-bold px-3 py-1.5 rounded-full uppercase tracking-widest" style="background:${GOAL_COLORS[key]};color:${accent}">${GOAL_LABELS[key]}</span>
+          ${pct>=100?'<span class="text-lg" title="Completed">✅</span>':''}
+        </div>
+      </div>
+      <h3 class="text-base font-bold mb-4 text-on-surface leading-snug">${g.title}</h3>
+      <div class="space-y-2 mb-4">
+        <div class="flex justify-between text-xs font-bold text-on-surface-variant">
+          <span>PROGRESS</span><span style="color:${accent}">${pct}%</span>
+        </div>
+        <div class="progress-bar-track h-2.5 w-full">
+          <div class="progress-bar-fill h-full" style="width:${pct}%;background:linear-gradient(90deg,${accent},${accent}88)"></div>
+        </div>
+      </div>
+      <div class="flex items-center justify-between">
+        <p class="text-xs text-on-surface-variant">${daysLeft} days remaining</p>
+        <div onclick="event.stopPropagation(); ${canEdit?'openEditGoal(\''+key+'\')':'showToast(\'lock\',\''+editInfo+'\')'}" class="flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-full transition-all active:scale-95 ${canEdit?'glass-teal cursor-pointer':'cursor-not-allowed'}" style="color:${canEdit?accent:'#8a9090'}">
+          <span class="material-symbols-outlined" style="font-size:14px">${canEdit?'edit':'lock'}</span>
+          ${canEdit?'Edit':'Locked'}
+        </div>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+// ─────────────────────────────────────────── GOAL EDITING
+function canEditGoal(key) {
+  const goals=getGoals(); const g=goals[key]; if(!g) return false;
+  if((g.progress||0)>=100) return true;
+  if(!g.lastEdited) return true;
+  return (Date.now()-new Date(g.lastEdited))>30*24*3600*1000;
+}
+function getEditLockMessage(key) {
+  const goals=getGoals(); const g=goals[key]; if(!g) return '';
+  if(!g.lastEdited) return '';
+  const nextEdit=new Date(new Date(g.lastEdited).getTime()+30*24*3600*1000);
+  return 'Edit available on '+formatDate(nextEdit.toISOString());
+}
+function openEditGoal(key) {
+  state.selectedGoalKey=key;
+  const goals=getGoals(); const g=goals[key];
+  document.getElementById('edit-goal-title').value=g.title;
+  document.getElementById('edit-goal-desc').value=g.desc||'';
+  document.getElementById('edit-goal-deadline').value=g.deadline?g.deadline.split('T')[0]:'';
+  const badge=document.getElementById('edit-goal-badge');
+  badge.textContent=GOAL_LABELS[key]; badge.style.background=GOAL_COLORS[key]; badge.style.color=GOAL_ACCENT[key];
+  document.getElementById('edit-goal-modal').classList.remove('hidden');
+}
+function closeEditGoalModal() { document.getElementById('edit-goal-modal').classList.add('hidden'); }
+function saveGoalEdit() {
+  const title=document.getElementById('edit-goal-title').value.trim();
+  const desc=document.getElementById('edit-goal-desc').value.trim();
+  const deadline=document.getElementById('edit-goal-deadline').value;
+  if(!title){showToast('error','Please enter a goal title.');return;}
+  const goals=getGoals(); const g=goals[state.selectedGoalKey];
+  g.title=title; if(desc) g.desc=desc;
+  if(deadline) g.deadline=new Date(deadline).toISOString();
+  g.lastEdited=new Date().toISOString();
+  // If was 100%, reset progress for new goal cycle
+  if((g.progress||0)>=100) g.progress=0;
+  setGoals(goals);
+  closeEditGoalModal();
+  showToast('check_circle','Goal updated!');
+  renderGoalCards();
+  if(state.screen==='project') initProject();
+}
+
+// ─────────────────────────────────────────── TASKS
+let currentTaskTab='daily';
+
+function initTasks() {
+  const user=getSession(); if(!user) return;
+  document.getElementById('tasks-avatar').textContent=user.displayName[0].toUpperCase();
+  currentTaskTab='daily';
+  switchTaskTab('daily');
+  renderTaskStats();
+}
+
+function getTodayKey() { return new Date().toDateString(); }
+function getWeekKey() {
+  const now=new Date(); const d=new Date(now); d.setDate(d.getDate()-d.getDay());
+  return 'w'+d.getFullYear()+'-'+d.getMonth()+'-'+d.getDate();
+}
+function getMonthKey() { const now=new Date(); return 'm'+now.getFullYear()+'-'+now.getMonth(); }
+
+function isTaskDone(task) {
+  if(!task.lastDone) return false;
+  const ld=task.lastDone;
+  if(task.freq==='daily') return ld===getTodayKey();
+  if(task.freq==='weekly') return ld===getWeekKey();
+  if(task.freq==='monthly') return ld===getMonthKey();
+  return false;
+}
+
+function toggleTask(freq, idx) {
+  const tasks=getTasks();
+  const task=tasks[freq][idx];
+  const done=isTaskDone(task);
+  if(done) {
+    task.lastDone=null;
+  } else {
+    if(freq==='daily') task.lastDone=getTodayKey();
+    else if(freq==='weekly') task.lastDone=getWeekKey();
+    else task.lastDone=getMonthKey();
+    task.streak=(task.streak||0)+1;
+    showToast('check_circle','Great job! Keep it up 🔥');
+  }
+  setTasks(tasks);
+  renderTaskList(freq);
+  renderTaskStats();
+  // Update dashboard quick summary if needed
+  if(freq==='daily') {
+    const daily=tasks.daily||[];
+    const doneCnt=daily.filter(t=>isTaskDone(t)).length;
+    const el=document.getElementById('dash-tasks-label');
+    if(el) el.textContent=`${doneCnt}/${daily.length} completed today`;
+  }
+}
+
+function deleteTask(freq, idx) {
+  const tasks=getTasks();
+  tasks[freq].splice(idx,1);
+  setTasks(tasks);
+  renderTaskList(freq);
+  renderTaskStats();
+}
+
+function renderTaskList(freq) {
+  const tasks=getTasks();
+  const list=tasks[freq]||[];
+  const container=document.getElementById('tasks-'+freq+'-list');
+  if(!container) return;
+  if(!list.length) {
+    container.innerHTML=`<div class="text-center py-10 text-on-surface-variant text-sm">No ${freq} tasks yet.<br>Tap <span class="font-bold text-primary">+</span> to add one.</div>`;
+    return;
+  }
+  container.innerHTML=list.map((t,i)=>{
+    const done=isTaskDone(t);
+    return `<div class="task-item ${done?'done':''}">
+      <div class="task-check ${done?'checked':''}" onclick="toggleTask('${freq}',${i})">
+        ${done?'<span class="material-symbols-outlined text-white fill-icon" style="font-size:16px">check</span>':''}
+      </div>
+      <span class="text-xl flex-shrink-0">${t.emoji||'🎯'}</span>
+      <div class="flex-1">
+        <span class="task-name font-semibold text-on-surface text-sm">${t.name}</span>
+        ${t.streak&&t.streak>1?`<div class="mt-0.5"><span class="task-streak">🔥 ${t.streak} streak</span></div>`:''}
+      </div>
+      <button onclick="deleteTask('${freq}',${i})" class="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant opacity-40 hover:opacity-80 transition-opacity">
+        <span class="material-symbols-outlined" style="font-size:18px">delete</span>
+      </button>
+    </div>`;
+  }).join('');
+}
+
+function renderTaskStats() {
+  const tasks=getTasks();
+  ['daily','weekly','monthly'].forEach(freq=>{
+    const list=tasks[freq]||[];
+    const done=list.filter(t=>isTaskDone(t)).length;
+    const total=list.length;
+    const pct=total?Math.round(done/total*100):0;
+    const countEl=document.getElementById('tasks-'+freq+'-count');
+    const barEl=document.getElementById('tasks-'+freq+'-bar');
+    if(countEl) countEl.textContent=`${done}/${total}`;
+    if(barEl) barEl.style.width=pct+'%';
+  });
+}
+
+function switchTaskTab(freq) {
+  currentTaskTab=freq;
+  ['daily','weekly','monthly'].forEach(f=>{
+    document.getElementById('tab-'+f)?.classList.toggle('active',f===freq);
+    const listEl=document.getElementById('tasks-'+f+'-list');
+    if(listEl) listEl.classList.toggle('hidden',f!==freq);
+  });
+  renderTaskList(freq);
+}
+
+function openAddTask() {
+  document.getElementById('task-emoji').value='';
+  document.getElementById('task-name').value='';
+  selectFreq(currentTaskTab);
+  document.getElementById('add-task-modal').classList.remove('hidden');
+}
+function closeAddTask() { document.getElementById('add-task-modal').classList.add('hidden'); }
+function selectFreq(freq) {
+  state.activeTaskFreq=freq;
+  ['daily','weekly','monthly'].forEach(f=>{
+    document.getElementById('freq-'+f)?.classList.toggle('active',f===freq);
+  });
+}
+function saveTask() {
+  const name=document.getElementById('task-name').value.trim();
+  const emoji=document.getElementById('task-emoji').value.trim()||'🎯';
+  if(!name){showToast('error','Please enter a task name.');return;}
+  const tasks=getTasks();
+  const freq=state.activeTaskFreq||'daily';
+  tasks[freq].push({name,emoji,freq,lastDone:null,streak:0,createdAt:new Date().toISOString()});
+  setTasks(tasks);
+  closeAddTask();
+  showToast('add_task','Task added!');
+  switchTaskTab(freq);
+  renderTaskStats();
+}
+
+// ─────────────────────────────────────────── CAPSULES
+function initCapsules() {
+  const user=getSession(); if(!user) return;
+  document.getElementById('cap-avatar').textContent=user.displayName[0].toUpperCase();
+  renderCapsulesList();
+}
+function renderCapsulesList() {
+  const caps=getCapsules(); const list=document.getElementById('capsules-list'); const empty=document.getElementById('capsules-empty');
+  list.innerHTML='';
+  if(!caps.length){empty.classList.remove('hidden');return;}
+  empty.classList.add('hidden');
+  caps.forEach((c,i)=>{
+    const now=Date.now(); const unlock=new Date(c.unlockDate).getTime();
+    const daysLeft=Math.max(0,Math.ceil((unlock-now)/86400000));
+    const unlocked=now>=unlock;
+    const div=document.createElement('div');
+    div.className='glass-card rounded-2xl p-6 transition-all duration-300';
+    div.innerHTML=`
+      <div class="flex justify-between items-start mb-5">
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 rounded-xl glass-teal flex items-center justify-center"><span class="material-symbols-outlined text-primary">${c.format==='voice'?'mic':'message'}</span></div>
+          <div>
+            <h3 class="font-semibold text-base text-on-surface">${c.title||'Untitled Capsule'}</h3>
+            <p class="text-xs text-on-surface-variant uppercase tracking-widest font-medium mt-0.5">${formatDate(c.createdAt)}</p>
+          </div>
+        </div>
+        <button onclick="toggleCapsuleNotify(${i})" class="w-9 h-9 rounded-full glass-subtle flex items-center justify-center">
+          <span class="material-symbols-outlined text-sm ${c.notify?'fill-icon text-primary':'text-outline'}">${c.notify?'notifications_active':'notifications'}</span>
+        </button>
+      </div>
+      <div class="glass-subtle rounded-xl p-5 text-center mb-4">
+        ${unlocked?`
+          <p class="text-xs text-on-surface-variant uppercase tracking-widest mb-1">Unlocked!</p>
+          <button onclick="openCapsule(${i})" class="btn-primary px-6 py-2.5 text-sm font-semibold flex items-center gap-2 mx-auto"><span class="material-symbols-outlined text-sm">lock_open</span>Read Now</button>
+        `:`
+          <p class="text-xs text-on-surface-variant uppercase tracking-widest mb-1">Unlocks in</p>
+          <div class="flex items-baseline justify-center gap-1 mb-1">
+            <span class="text-4xl font-extrabold text-primary tracking-tight">${daysLeft}</span>
+            <span class="text-lg font-bold text-primary">days</span>
+          </div>
+          <p class="text-xs text-on-surface-variant">${formatDate(c.unlockDate)}</p>
+        `}
+      </div>
+      <div class="flex items-center justify-between">
+        <span class="flex items-center gap-2 text-xs font-semibold ${c.notify?'text-primary':'text-on-surface-variant'}">
+          <span class="w-2 h-2 rounded-full ${c.notify?'bg-primary pulse-dot':'bg-outline'}"></span>${c.notify?'Notify Active':'Notify Off'}
+        </span>
+        <div class="flex items-center gap-2">
+          ${c.tag?`<span class="chip text-xs" style="background:rgba(191,234,241,.4);color:#2e585e;padding:4px 10px">${c.tag}</span>`:''}
+          <span class="material-symbols-outlined text-on-surface-variant">${unlocked?'lock_open':'lock'}</span>
+        </div>
+      </div>
+    `;
+    list.appendChild(div);
+  });
+}
+function toggleCapsuleNotify(i) {
+  const caps=getCapsules(); caps[i].notify=!caps[i].notify; setCapsules(caps); renderCapsulesList();
+  showToast(caps[i].notify?'notifications_active':'notifications',caps[i].notify?'Notifications enabled':'Disabled');
+}
+function openCapsule(i) {
+  const c=getCapsules()[i];
+  document.getElementById('co-title').textContent=c.title||'Untitled';
+  document.getElementById('co-date').textContent='Sealed on '+formatDate(c.createdAt);
+  document.getElementById('co-content').textContent=c.content||'(Voice note — playback not supported in this view)';
+  const tagRow=document.getElementById('co-tag-row');
+  tagRow.innerHTML=c.tag?`<span class="chip" style="background:rgba(191,234,241,.5);color:#1a454b">${c.tag}</span>`:'';
+  document.getElementById('capsule-open-modal').classList.remove('hidden');
+}
+function closeCapsuleModal() { document.getElementById('capsule-open-modal').classList.add('hidden'); }
+
+// ─────────────────────────────────────────── CREATE CAPSULE
+function initCreateCapsule() {
+  const user=getSession(); if(!user) return;
+  document.getElementById('cc-avatar').textContent=user.displayName[0].toUpperCase();
+  const d=new Date(); d.setFullYear(d.getFullYear()+1);
+  document.getElementById('cc-date').value=d.toISOString().split('T')[0];
+  document.getElementById('cc-title').value=''; document.getElementById('cc-content').value='';
+  state.selectedFormat='message'; state.selectedCapsuleTag='Optimistic';
+  selectFormat('message');
+  document.querySelectorAll('#tag-container .chip').forEach((b,i)=>{
+    b.style.background=i===0?'rgba(191,234,241,.7)':'rgba(233,232,232,.5)';
+    b.style.color=i===0?'#1a454b':'#5e5f5f';
+  });
+}
+function selectFormat(fmt) {
+  state.selectedFormat=fmt;
+  const msgBtn=document.getElementById('fmt-message'); const voiceBtn=document.getElementById('fmt-voice');
+  const msgArea=document.getElementById('cc-message-area'); const voiceArea=document.getElementById('cc-voice-area');
+  if(fmt==='message'){
+    msgBtn.style.cssText=''; msgBtn.classList.add('glass-teal'); voiceBtn.className='flex flex-col items-center justify-center p-7 rounded-2xl transition-all duration-300 active:scale-95 glass-subtle'; voiceBtn.style.color='#5e5f5f';
+    msgArea.classList.remove('hidden'); voiceArea.classList.add('hidden');
+  } else {
+    voiceBtn.style.cssText=''; voiceBtn.classList.add('glass-teal'); msgBtn.className='flex flex-col items-center justify-center p-7 rounded-2xl transition-all duration-300 active:scale-95 glass-subtle'; msgBtn.style.color='#5e5f5f';
+    msgArea.classList.add('hidden'); voiceArea.classList.remove('hidden');
+  }
+}
+function selectTag(btn,tag) {
+  state.selectedCapsuleTag=tag;
+  document.querySelectorAll('#tag-container .chip').forEach(b=>{b.style.background='rgba(233,232,232,.5)';b.style.color='#5e5f5f';});
+  btn.style.background='rgba(191,234,241,.7)'; btn.style.color='#1a454b';
+}
+function sealCapsule() {
+  const title=document.getElementById('cc-title').value.trim();
+  const content=state.selectedFormat==='message'?document.getElementById('cc-content').value.trim():'(Voice note recorded)';
+  const unlockDate=document.getElementById('cc-date').value;
+  const notify=document.getElementById('cc-notify').checked;
+  const err=document.getElementById('cc-error');
+  if(!title){err.textContent='Please give your capsule a title.';err.classList.remove('hidden');return;}
+  if(state.selectedFormat==='message'&&!content){err.textContent='Please write a message.';err.classList.remove('hidden');return;}
+  if(!unlockDate){err.textContent='Please set an unlock date.';err.classList.remove('hidden');return;}
+  err.classList.add('hidden');
+  const caps=getCapsules();
+  caps.unshift({title,content,format:state.selectedFormat,tag:state.selectedCapsuleTag,unlockDate,notify,createdAt:new Date().toISOString()});
+  setCapsules(caps);
+  addTimelineEntry({type:'capsule',title:`Created "${title}"`,desc:`A time capsule sealed for ${formatDate(unlockDate)}`,tag:state.selectedCapsuleTag,date:new Date().toISOString()});
+  showToast('lock','Capsule sealed until '+formatDate(unlockDate));
+  setTimeout(()=>navigate('capsules'),400);
+}
+let recInterval;
+function toggleRecording() {
+  state.recording=!state.recording;
+  const btn=document.getElementById('voice-btn'); const icon=document.getElementById('voice-icon');
+  const status=document.getElementById('voice-status'); const timer=document.getElementById('voice-timer');
+  if(state.recording){
+    btn.style.background='linear-gradient(135deg,#3b656b,#2a5257)'; btn.style.color='white';
+    icon.textContent='stop'; status.textContent='Recording…'; timer.classList.remove('hidden');
+    state.recSeconds=0;
+    recInterval=setInterval(()=>{
+      state.recSeconds++;
+      const m=Math.floor(state.recSeconds/60); const s=state.recSeconds%60;
+      timer.textContent=`${m}:${s.toString().padStart(2,'0')}`;
+    },1000);
+  } else {
+    clearInterval(recInterval);
+    btn.style.background=''; btn.style.color='';
+    icon.textContent='mic'; status.textContent=`Recorded (${state.recSeconds}s)`; timer.classList.add('hidden');
+    showToast('mic','Voice note recorded!');
+  }
+}
+
+// ─────────────────────────────────────────── MIRROR
+function initMirror() {
+  const user=getSession(); if(!user) return;
+  document.getElementById('mir-avatar').textContent=user.displayName[0].toUpperCase();
+  renderTimeline();
+}
+function renderTimeline() {
+  const entries=getTimeline(); const container=document.getElementById('timeline-container'); const empty=document.getElementById('mirror-empty');
+  while(container.children.length>1) container.removeChild(container.lastChild);
+  if(!entries.length){empty.classList.remove('hidden');return;}
+  empty.classList.add('hidden');
+  const icons={capsule:'inventory_2',checkin:'self_improvement',update:'trending_up',note:'lightbulb'};
+  entries.forEach((e,i)=>{
+    const div=document.createElement('div');
+    div.className='relative mb-10 fade-in';
+    div.style.animationDelay=(i*.05)+'s';
+    div.innerHTML=`
+      <div class="timeline-dot" style="top:20px"></div>
+      <div class="glass-card rounded-2xl p-6 border-0">
+        <div class="flex justify-between items-start mb-3">
+          <span class="text-xs font-bold text-primary uppercase tracking-widest">${e.mood||new Date(e.date).toLocaleString('en',{month:'short',year:'numeric'}).toUpperCase()}</span>
+          <span class="material-symbols-outlined text-primary opacity-30 fill-icon" style="font-size:18px">${icons[e.type]||'auto_awesome'}</span>
+        </div>
+        <h4 class="text-on-surface font-semibold mb-2">${e.title}</h4>
+        <p class="text-on-surface-variant text-sm leading-relaxed">${e.desc||''}</p>
+        ${e.tag?`<div class="mt-4"><span class="chip text-xs" style="background:rgba(191,234,241,.4);color:#2e585e;padding:4px 12px">${e.tag}</span></div>`:''}
+        <p class="text-xs text-on-surface-variant mt-4 opacity-50">${formatDateTime(e.date)}</p>
+      </div>
+    `;
+    container.appendChild(div);
+  });
+}
+
+// ─────────────────────────────────────────── CHECK-IN
+let ciStepActive=0;
+function initCheckIn() {
+  const user=getSession(); if(!user) return;
+  document.getElementById('ci-avatar').textContent=user.displayName[0].toUpperCase();
+  ciStepActive=0; state.ciAnswers=[];
+  const now=new Date();
+  document.getElementById('ci-date-label').textContent=`${now.toLocaleString('en',{month:'long'})} (Week ${getWeekNum(now)})`;
+  const timeline=getTimeline(); const lastCI=timeline.find(e=>e.type==='checkin');
+  document.getElementById('ci-last-week').textContent=lastCI?`Last: "${lastCI.title}"` : 'Complete your first check-in!';
+  renderCIQuestion();
+}
+function renderCIQuestion() {
+  const q=CI_QUESTIONS[ciStepActive];
+  document.getElementById('ci-question').textContent=q.q;
+  document.getElementById('ci-progress-label').textContent=`Question ${ciStepActive+1} of ${CI_QUESTIONS.length}`;
+  const pct=((ciStepActive+1)/CI_QUESTIONS.length*100).toFixed(0);
+  document.getElementById('ci-progress-pct').textContent=pct+'%';
+  document.getElementById('ci-progress-bar').style.width=pct+'%';
+  ['slider','choice','text'].forEach(t=>document.getElementById('ci-'+t+'-zone').classList.add('hidden'));
+  if(q.type==='slider'){
+    document.getElementById('ci-slider-zone').classList.remove('hidden');
+    document.getElementById('ci-emoji-lo').textContent=q.elo;
+    document.getElementById('ci-emoji-hi').textContent=q.ehi;
+    document.getElementById('ci-label-lo').textContent=q.lo;
+    document.getElementById('ci-label-hi').textContent=q.hi;
+    document.getElementById('ci-slider').value=50; updateSliderLabel(50);
+  } else if(q.type==='choice'){
+    const choiceZ=document.getElementById('ci-choice-zone'); choiceZ.classList.remove('hidden');
+    choiceZ.innerHTML=q.choices.map(c=>`<button onclick="selectChoice(this,'${c}')" class="py-4 px-4 rounded-xl text-sm font-medium transition-all duration-200 text-on-surface active:scale-95 glass-subtle">${c}</button>`).join('');
+  } else {
+    document.getElementById('ci-text-zone').classList.remove('hidden');
+    document.getElementById('ci-text-input').value='';
+  }
+  const last=ciStepActive===CI_QUESTIONS.length-1;
+  document.getElementById('ci-btn-label').textContent=last?'Complete Check-in':'Next Question';
+  document.getElementById('ci-btn-icon').textContent=last?'check':'arrow_forward';
+}
+function updateSliderLabel(v){document.getElementById('ci-slider-val').textContent=v;}
+function selectChoice(btn,val){
+  document.querySelectorAll('#ci-choice-zone button').forEach(b=>{b.className='py-4 px-4 rounded-xl text-sm font-medium transition-all duration-200 text-on-surface active:scale-95 glass-subtle';});
+  btn.className='py-4 px-4 rounded-xl text-sm font-medium transition-all duration-200 text-on-surface active:scale-95';
+  btn.style.background='rgba(191,234,241,.7)'; btn.style.color='#1a454b';
+}
+function nextCheckIn() {
+  const q=CI_QUESTIONS[ciStepActive]; let answer;
+  if(q.type==='slider') answer=document.getElementById('ci-slider').value;
+  else if(q.type==='choice'){const sel=document.querySelector('#ci-choice-zone button[style*="bfeaf1"]'); answer=sel?sel.textContent:'Skipped';}
+  else answer=document.getElementById('ci-text-input').value||'Skipped';
+  state.ciAnswers.push({q:q.q,a:answer});
+  if(ciStepActive<CI_QUESTIONS.length-1){ciStepActive++;renderCIQuestion();}
+  else {
+    const scores=state.ciAnswers.filter(a=>!isNaN(a.a));
+    const avgScore=scores.length?Math.round(scores.reduce((s,a)=>s+parseInt(a.a),0)/scores.length):50;
+    const mood=avgScore>70?'Energetic':avgScore>50?'Balanced':avgScore>30?'Reflective':'Tired';
+    addTimelineEntry({type:'checkin',title:`Weekly Reflection — ${mood}`,desc:`Overall energy: ${avgScore}/100. "${state.ciAnswers[state.ciAnswers.length-1].a||''}"`,mood:`Mood: ${mood}`,date:new Date().toISOString()});
+    showToast('check_circle','Check-in complete! Great work.');
+    ciStepActive=0; state.ciAnswers=[];
+    setTimeout(()=>renderCIQuestion(),600);
+  }
+}
+
+// ─────────────────────────────────────────── PROJECT
+function initProject() {
+  const user=getSession(); if(!user) return;
+  document.getElementById('proj-avatar').textContent=user.displayName[0].toUpperCase();
+  const goals=getGoals(); const g=goals[state.selectedGoalKey]; if(!g) return;
+  document.getElementById('proj-title').textContent=g.title;
+  document.getElementById('proj-desc').textContent=g.desc;
+  const pct=g.progress||0;
+  document.getElementById('proj-pct').textContent=pct+'%';
+  document.getElementById('proj-bar').style.width=pct+'%';
+  const deadline=g.deadline?new Date(g.deadline):new Date();
+  const daysLeft=Math.max(0,Math.ceil((deadline-Date.now())/86400000));
+  document.getElementById('proj-days').textContent=daysLeft+' Days';
+  document.getElementById('proj-momentum').textContent=pct>60?'High':pct>30?'Steady':'Building';
+  document.getElementById('proj-trend').textContent=g.updates?.length?`+${Math.min(12,g.updates.length)}% this month`:'Just started';
+  // Mini chart
+  const chart=document.getElementById('proj-chart'); chart.innerHTML='';
+  const pts=g.updates?.length?g.updates.map(u=>u.pct||0):[10,20,30,40,50,60,pct];
+  const last7=pts.slice(-7); const maxP=Math.max(...last7,1);
+  last7.forEach(p=>{
+    const bar=document.createElement('div'); bar.className='flex-1 rounded-t-lg transition-all duration-700';
+    bar.style.cssText=`height:${Math.max(8,p/maxP*100)}%;background:rgba(59,101,107,${0.2+p/maxP*0.65})`;
+    chart.appendChild(bar);
+  });
+  // Edit zone
+  const canEdit=canEditGoal(state.selectedGoalKey);
+  const editInfo=canEdit?'':getEditLockMessage(state.selectedGoalKey);
+  const accent=GOAL_ACCENT[state.selectedGoalKey];
+  document.getElementById('proj-edit-zone').innerHTML=canEdit
+    ?`<button onclick="openEditGoal('${state.selectedGoalKey}')" class="glass-teal rounded-full px-4 py-2 text-sm font-semibold flex items-center gap-2" style="color:${accent};display:inline-flex"><span class="material-symbols-outlined" style="font-size:16px">edit</span>Edit Goal</button>`
+    :`<span class="locked-badge flex items-center gap-1 inline-flex"><span class="material-symbols-outlined" style="font-size:14px">lock</span>${editInfo}</span>`;
+  document.getElementById('update-pct').value=pct;
+  document.getElementById('update-pct-val').textContent=pct+'%';
+  renderProjectNotes(g); renderProjectUpdates(g);
+}
+function renderProjectNotes(g) {
+  const container=document.getElementById('proj-notes');
+  const noteIcons=['lightbulb','groups','history_edu','star','bookmark'];
+  if(!g.notes?.length){container.innerHTML=`<p class="text-on-surface-variant text-sm italic">No notes yet. Add your first insight!</p>`;return;}
+  container.innerHTML=g.notes.map((n,i)=>`
+    <div class="glass-card rounded-xl p-6">
+      <span class="material-symbols-outlined text-on-surface-variant block mb-3 opacity-50">${noteIcons[i%noteIcons.length]}</span>
+      <h4 class="text-base font-bold mb-2 text-on-surface">${n.title}</h4>
+      <p class="text-on-surface-variant text-sm leading-relaxed">${n.content}</p>
+      <p class="text-xs text-on-surface-variant mt-3 opacity-50">${formatDateTime(n.date)}</p>
+    </div>`).join('');
+}
+function renderProjectUpdates(g) {
+  const container=document.getElementById('proj-updates');
+  if(!g.updates?.length){container.innerHTML=`<p class="text-on-surface-variant text-sm italic">No updates yet. Log your first progress below!</p>`;return;}
+  container.innerHTML=g.updates.slice().reverse().map((u,i)=>`
+    <div class="flex gap-5">
+      <div class="flex flex-col items-center">
+        <div class="w-9 h-9 rounded-full flex items-center justify-center z-10 glass-teal">
+          <span class="material-symbols-outlined fill-icon text-primary" style="font-size:18px">${i===0?'check_circle':'radio_button_checked'}</span>
+        </div>
+        ${i<g.updates.length-1?'<div class="flex-1 w-px mt-2" style="background:rgba(59,101,107,.15)"></div>':''}
+      </div>
+      <div class="pb-8 flex-1">
+        <span class="text-xs font-bold text-on-surface-variant uppercase tracking-widest block mb-1">${formatDateTime(u.date)}</span>
+        <h4 class="text-sm font-bold mb-2">${u.text}</h4>
+        <div class="flex items-center gap-2">
+          <div class="h-1.5 rounded-full flex-1 overflow-hidden" style="background:rgba(178,178,178,.2)">
+            <div class="h-full rounded-full" style="background:#3b656b;width:${u.pct}%"></div>
+          </div>
+          <span class="text-xs font-bold text-primary">${u.pct}%</span>
+        </div>
+      </div>
+    </div>`).join('');
+}
+function addNote(){document.getElementById('note-modal').classList.remove('hidden');}
+function closeNoteModal(){document.getElementById('note-modal').classList.add('hidden');}
+function saveNote() {
+  const title=document.getElementById('note-title').value.trim();
+  const content=document.getElementById('note-content').value.trim();
+  if(!title||!content) return;
+  const goals=getGoals(); const g=goals[state.selectedGoalKey];
+  if(!g.notes) g.notes=[];
+  g.notes.unshift({title,content,date:new Date().toISOString()});
+  setGoals(goals); closeNoteModal();
+  document.getElementById('note-title').value=''; document.getElementById('note-content').value='';
+  showToast('lightbulb','Note saved!'); renderProjectNotes(g);
+}
+function logUpdate() {
+  const text=document.getElementById('update-text').value.trim();
+  const pct=parseInt(document.getElementById('update-pct').value);
+  if(!text){showToast('error','Please describe your progress.');return;}
+  const goals=getGoals(); const g=goals[state.selectedGoalKey];
+  if(!g.updates) g.updates=[];
+  g.updates.push({text,pct,date:new Date().toISOString()});
+  g.progress=pct; setGoals(goals);
+  addTimelineEntry({type:'update',title:`Progress: ${g.title}`,desc:`${text} (${pct}%)`,date:new Date().toISOString()});
+  if(pct>=100) showToast('celebration','🎉 Goal completed! You can now set a new goal!');
+  else showToast('check_circle','Progress logged!');
+  document.getElementById('update-text').value=''; initProject();
+}
+
+// ─────────────────────────────────────────── SETTINGS
+function initSettings() {
+  const user=getSession(); if(!user) return;
+  const n=user.displayName[0].toUpperCase();
+  document.getElementById('set-avatar').textContent=n;
+  document.getElementById('set-big-avatar').textContent=n;
+  document.getElementById('set-display-name').textContent=user.displayName;
+  document.getElementById('set-email').textContent=user.email;
+  const goals=getGoals();
+  const container=document.getElementById('settings-goals');
+  container.innerHTML=Object.entries(goals).map(([key,g])=>`
+    <div class="glass-card rounded-xl p-5 flex items-center justify-between">
+      <div class="flex items-center gap-4">
+        <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:${GOAL_COLORS[key]};color:${GOAL_ACCENT[key]}">
+          <span class="material-symbols-outlined text-lg">${GOAL_ICONS[key]}</span>
+        </div>
+        <div>
+          <p class="text-xs font-bold text-on-surface-variant uppercase tracking-widest">${key}</p>
+          <p class="text-on-surface font-medium text-sm mt-0.5">${g.title}</p>
+        </div>
+      </div>
+      <span class="text-primary font-bold text-sm">${g.progress||0}%</span>
+    </div>`).join('');
+}
+function showEditProfile() {
+  const user=getSession(); document.getElementById('edit-name').value=user.displayName;
+  document.getElementById('edit-modal').classList.remove('hidden');
+}
+function closeEditModal(){document.getElementById('edit-modal').classList.add('hidden');}
+function saveProfile() {
+  const name=document.getElementById('edit-name').value.trim(); if(!name) return;
+  const un=getUsername(); const users=DB.get('users')||{};
+  users[un].displayName=name; DB.set('users',users);
+  closeEditModal(); initSettings(); showToast('check_circle','Profile updated!');
+}
+
+// ─────────────────────────────────────────── HELPERS
+function togglePwd(id,btn) {
+  const inp=document.getElementById(id); const icon=btn.querySelector('.material-symbols-outlined');
+  inp.type=inp.type==='password'?'text':'password'; icon.textContent=inp.type==='password'?'visibility':'visibility_off';
+}
+function formatDate(iso) { if(!iso) return ''; return new Date(iso).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); }
+function formatDateTime(iso) { if(!iso) return ''; return new Date(iso).toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'}); }
+function getWeekNum(d) { const s=new Date(d.getFullYear(),0,1); return Math.ceil(((d-s)/86400000+s.getDay()+1)/7); }
+let toastTimeout;
+function showToast(icon,msg) {
+  const t=document.getElementById('toast');
+  document.getElementById('toast-icon').textContent=icon;
+  document.getElementById('toast-msg').textContent=msg;
+  t.style.opacity='1'; t.style.transform='translateX(-50%) translateY(0)';
+  clearTimeout(toastTimeout);
+  toastTimeout=setTimeout(()=>{t.style.opacity='0';t.style.transform='translateX(-50%) translateY(12px)';},3000);
+}
+function showNotification(){showToast('notifications','No new notifications');}
+
+// ─────────────────────────────────────────── INIT
+(function(){
+  const session=DB.get('session');
+  if(session && (DB.get('users')||{})[session]) navigate('dashboard');
+  else navigate('splash');
+})();
+</script>
+</body>
+</html>
